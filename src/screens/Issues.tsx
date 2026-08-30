@@ -1,27 +1,5 @@
 import { useState } from 'react';
-import {
-  Bell,
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  CircleAlert,
-  ClipboardCheck,
-  FileBarChart,
-  Flag,
-  FolderKanban,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  MoreHorizontal,
-  Paperclip,
-  Plus,
-  Search,
-  Settings2,
-  SlidersHorizontal,
-  TestTube2,
-  UserRound,
-  X,
-} from 'lucide-react';
+import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, UserRound, X } from 'lucide-react';
 
 type Issue = { id: string; title: string; priority: 'Critical' | 'High' | 'Medium' | 'Low'; status: 'Open' | 'In Progress' | 'Under Review' | 'Closed'; assignee: string; initials: string; product: string; phase: string };
 
@@ -43,7 +21,7 @@ const navItems = [
   { label: 'Reports', icon: FileBarChart },
 ];
 
-function Issues({ onBackToProject, onSignOut }: { onBackToProject: () => void; onSignOut: () => void }) {
+function Issues({ onBackToProject, onSignOut, onReportIssue, onOpenReports }: { onBackToProject: () => void; onSignOut: () => void; onReportIssue: () => void; onOpenReports: () => void }) {
   const [selectedIssue, setSelectedIssue] = useState<Issue>(issues[0]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [resolved, setResolved] = useState(false);
@@ -52,14 +30,14 @@ function Issues({ onBackToProject, onSignOut }: { onBackToProject: () => void; o
     <aside className="issues-sidebar">
       <button className="issues-brand" onClick={onBackToProject}><span className="issues-brand-mark"><span /></span><strong>SiteSphere</strong><ChevronRight size={15} /></button>
       <div className="issues-sidebar-label">MAIN NAVIGATION</div>
-      <nav className="issues-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label}><Icon size={15} /><span>{label}</span></button>)}</nav>
+      <nav className="issues-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav>
       <div className="issues-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
     </aside>
 
     <div className="issues-main">
       <header className="issues-topbar"><button className="issues-mobile-menu" aria-label="Open navigation"><Menu size={18} /></button><button className="issues-project" onClick={onBackToProject}><FolderKanban size={13} /> Data Center Alpha</button><ChevronRight className="issues-project-arrow" size={13} /><label className="issues-global-search"><Search size={13} /><input placeholder="Search site data..." /></label><div className="issues-user"><button aria-label="Notifications"><Bell size={16} /><i /></button><span /><div><strong>Alex Construction</strong><small>Project Manager</small></div><b>AC</b></div></header>
 
-      <main className="issues-content"><div className="issues-page-heading"><div><h1><CircleAlert size={17} /> Issues Management</h1></div><label className="issues-search"><Search size={13} /><input placeholder="Search issues, IDs, or users..." /></label><div className="issues-heading-actions"><button onClick={() => setFilterOpen(!filterOpen)}><SlidersHorizontal size={13} /> Filters</button><button>Sort <ChevronDown size={12} /></button><button className="issues-add"><Plus size={13} /> Report Issue</button></div></div>{filterOpen && <div className="issues-filter-popover"><strong>Filter issues</strong><button>Priority <ChevronDown size={12} /></button><button>Status <ChevronDown size={12} /></button><button>Assignee <ChevronDown size={12} /></button></div>}
+      <main className="issues-content"><div className="issues-page-heading"><div><h1><CircleAlert size={17} /> Issues Management</h1></div><label className="issues-search"><Search size={13} /><input placeholder="Search issues, IDs, or users..." /></label><div className="issues-heading-actions"><button onClick={() => setFilterOpen(!filterOpen)}><SlidersHorizontal size={13} /> Filters</button><button>Sort <ChevronDown size={12} /></button><button className="issues-add" onClick={onReportIssue}><Plus size={13} /> Report Issue</button></div></div>{filterOpen && <div className="issues-filter-popover"><strong>Filter issues</strong><button>Priority <ChevronDown size={12} /></button><button>Status <ChevronDown size={12} /></button><button>Assignee <ChevronDown size={12} /></button></div>}
 
         <div className="issues-workspace"><section className="issues-table-panel"><div className="issues-table"><div className="issues-table-head"><span>Issue<br />ID</span><span>Title</span><span>Priority</span><span>Status</span><span>Assignee</span><span>Product</span><span>Phase</span></div>{issues.map((issue) => <button className={`issues-row ${selectedIssue.id === issue.id ? 'selected' : ''}`} key={issue.id} onClick={() => { setSelectedIssue(issue); setResolved(issue.status === 'Closed'); }}><span className="issue-id">{issue.id.replace('-', '-\n')}</span><span className="issue-title">{issue.title}</span><span><em className={`priority priority-${issue.priority.toLowerCase()}`}>{issue.priority}</em></span><span><em className={`issue-status status-${issue.status.toLowerCase().replace(' ', '-')}`}>{issue.status}</em></span><span className="issue-assignee"><i>{issue.initials}</i>{issue.assignee}</span><span>{issue.product}</span><span>{issue.phase}</span></button>)}</div><div className="issues-pagination"><span>Showing 5 of 128 issues</span><div><button>Previous</button><button>Next <ChevronRight size={12} /></button></div></div></section>
 

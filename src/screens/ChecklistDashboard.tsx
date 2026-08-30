@@ -1,23 +1,4 @@
-import {
-  Bell,
-  Building2,
-  CheckCircle2,
-  ChevronRight,
-  CircleAlert,
-  ClipboardCheck,
-  Clock3,
-  Download,
-  FileBarChart,
-  Flag,
-  FolderKanban,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Search,
-  Settings2,
-  SlidersHorizontal,
-  TestTube2,
-} from 'lucide-react';
+import { Bell, Building2, CircleCheck as CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Clock3, Download, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Search, Settings2, SlidersHorizontal, TestTube as TestTube2 } from 'lucide-react';
 
 type Company = { name: string; tasks: string; verified: string; progress: number; status: 'On Track' | 'Delayed' | 'Ahead' };
 
@@ -39,13 +20,13 @@ const navItems = [
   { label: 'Reports', icon: FileBarChart },
 ];
 
-function ChecklistDashboard({ onBackToProject, onSignOut }: { onBackToProject: () => void; onSignOut: () => void }) {
+function ChecklistDashboard({ onBackToProject, onOpenReports, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onSignOut: () => void }) {
   return (
     <div className="dashboard-screen">
       <aside className="dashboard-sidebar">
         <div className="sidebar-label">MAIN NAVIGATION</div>
         <nav className="dashboard-nav">
-          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label}><Icon size={17} /><span>{label}</span></button>)}
+          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : undefined}><Icon size={17} /><span>{label}</span></button>)}
         </nav>
         <div className="sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={17} /> Switch Project</button><button className="signout-link" onClick={onSignOut}><LogOut size={17} /> Sign Out</button></div>
       </aside>

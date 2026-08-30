@@ -1,25 +1,4 @@
-import {
-  Activity,
-  Bell,
-  CheckCircle2,
-  CircleAlert,
-  ClipboardCheck,
-  Download,
-  FileBarChart,
-  Flag,
-  FolderKanban,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Search,
-  Settings2,
-  ShieldCheck,
-  SlidersHorizontal,
-  TestTube2,
-  Users,
-  Wrench,
-  Zap,
-} from 'lucide-react';
+import { Activity, Bell, CircleCheck as CheckCircle2, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Search, Settings2, ShieldCheck, SlidersHorizontal, TestTube as TestTube2, Users, Wrench, Zap } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, active: true },
@@ -37,14 +16,14 @@ const issueCards = [
   { label: 'SAFETY ISSUES (HSE)', total: '5', resolved: '1', rate: '20.0%', change: '+1', color: 'green' },
 ];
 
-function Dashboard({ onBackToProjects, onOpenChecklist, onOpenCompanyChecklists, onOpenIssues, onSignOut }: { onBackToProjects: () => void; onOpenChecklist: () => void; onOpenCompanyChecklists: () => void; onOpenIssues: () => void; onSignOut: () => void }) {
+function Dashboard({ onBackToProjects, onOpenChecklist, onOpenCompanyChecklists, onOpenIssues, onOpenReports, onOpenTesting, onSignOut }: { onBackToProjects: () => void; onOpenChecklist: () => void; onOpenCompanyChecklists: () => void; onOpenIssues: () => void; onOpenReports: () => void; onOpenTesting: () => void; onSignOut: () => void }) {
   return (
     <div className="project-dashboard-screen">
       <aside className="project-dashboard-sidebar">
         <button className="project-dashboard-brand" onClick={onBackToProjects}><span className="project-dashboard-mark"><span /></span><strong>SiteSphere</strong></button>
         <div className="project-sidebar-label">MAIN NAVIGATION</div>
         <nav className="project-dashboard-nav">
-          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Issues' ? onOpenIssues : label === 'Checklist Stats' ? onOpenChecklist : label === 'Company Checklists' ? onOpenCompanyChecklists : undefined}><Icon size={16} /><span>{label}</span></button>)}
+          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Issues' ? onOpenIssues : label === 'Checklist Stats' ? onOpenChecklist : label === 'Company Checklists' ? onOpenCompanyChecklists : label === 'Testing Workflow' ? onOpenTesting : label === 'Reports' ? onOpenReports : undefined}><Icon size={16} /><span>{label}</span></button>)}
         </nav>
         <div className="project-sidebar-bottom"><button><Settings2 size={16} /> Switch Project</button><button className="project-signout" onClick={onSignOut}><LogOut size={16} /> Sign Out</button></div>
       </aside>
