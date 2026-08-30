@@ -74,6 +74,3 @@ function Reports({ onBackToProject, onOpenSubmittals, onSignOut }: { onBackToPro
 }
 
 export default Reports;
-
-
-export default Reports
