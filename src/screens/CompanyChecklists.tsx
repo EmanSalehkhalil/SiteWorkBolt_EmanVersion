@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, RefreshCw, Search, Settings2, TestTube as TestTube2, Wrench } from 'lucide-react';
+import { Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, RefreshCw, Search, Settings2, TestTube as TestTube2, Wrench } from 'lucide-react';
 
 type Phase = { level: string; title: string; status: string; active?: boolean; complete?: boolean };
 type Task = { text: string; meta: string; result: 'PASSED' | 'FAILED' | 'N/A'; issue?: boolean };
@@ -26,6 +26,7 @@ const installationTasks: Task[] = [
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
+  { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert },
   { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban, active: true },
@@ -42,7 +43,7 @@ function TaskRow({ task }: { task: Task }) {
   return <div className="company-task-row"><div><strong>{task.text}</strong><small><RefreshCw size={10} /> {task.meta.split('   ')[0]} <MessageSquare size={10} /> {task.meta.split('   ')[1]} <Paperclip size={10} /> {task.meta.split('   ')[2]}</small>{task.issue && <em className="linked-issue"><CircleAlert size={10} /> 1 linked issue</em>}</div><ResultButtons task={task} /></div>;
 }
 
-function CompanyChecklists({ onBackToProject, onOpenReports, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onSignOut: () => void }) {
+function CompanyChecklists({ onBackToProject, onOpenReports, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {
   const [selectedPhase, setSelectedPhase] = useState('L2');
   const [expanded, setExpanded] = useState(true);
 
@@ -50,7 +51,7 @@ function CompanyChecklists({ onBackToProject, onOpenReports, onSignOut }: { onBa
     <aside className="company-checklist-sidebar">
       <button className="company-checklist-brand" onClick={onBackToProject}><span className="company-checklist-mark"><span /></span><strong>SiteSphere</strong></button>
       <div className="company-sidebar-label">MAIN NAVIGATION</div>
-      <nav className="company-checklist-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : undefined}><Icon size={16} /><span>{label}</span></button>)}</nav>
+      <nav className="company-checklist-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : undefined}><Icon size={16} /><span>{label}</span></button>)}</nav>
       <div className="company-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={16} /> Switch Project</button><button onClick={onSignOut}><LogOut size={16} /> Sign Out</button></div>
     </aside>
 

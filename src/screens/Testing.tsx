@@ -1,11 +1,11 @@
 import { useState, type ChangeEvent } from 'react';
-import { Activity, Bell, Check, ChevronDown, CircleAlert, ClipboardCheck, Clock3, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, Search, Settings2, TestTube as TestTube2, Upload, UserRound, X } from 'lucide-react';
+import { Activity, Bell, Check, ChevronDown, CircleAlert, ClipboardCheck, Clock3, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, Search, Settings2, TestTube as TestTube2, Upload, UserRound, X } from 'lucide-react';
 
 type Status = 'Passed' | 'In Progress' | 'Not Started' | 'Failed' | 'Passed with Exceptions' | 'Deferred Testing Requirements';
 type Test = { id: string; name: string; assignee: string; status: Status; attempts: number };
 
 const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Issues', icon: CircleAlert },
+  { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Submittals', icon: FileText }, { label: 'Issues', icon: CircleAlert },
   { label: 'Checklist Stats', icon: ClipboardCheck }, { label: 'Company Checklists', icon: FolderKanban },
   { label: 'Testing Workflow', icon: TestTube2, active: true }, { label: 'Milestones', icon: Flag }, { label: 'Reports', icon: FileBarChart },
 ];
@@ -23,7 +23,7 @@ function InventoryGroup({ title, items, selectedId, onSelect }: { title: string;
   return <div className="testing-group"><strong>{title}<ChevronDown size={13} /></strong>{items.map((item) => <button className={item.id === selectedId ? 'selected' : ''} key={item.id} onClick={() => onSelect(item.id)}><span>{item.name}<small><UserRound size={9} /> {item.assignee}</small></span><em className={statusClass[item.status]}>{item.status}</em><i>{item.attempts} ATTEMPTS</i></button>)}</div>;
 }
 
-function Testing({ onBackToProject, onOpenReports, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onSignOut: () => void }) {
+function Testing({ onBackToProject, onOpenReports, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {
   const [selectedId, setSelectedId] = useState('UPS-01-01');
   const [query, setQuery] = useState('');
   const [fileName, setFileName] = useState('measurement_logs.csv');
@@ -38,7 +38,7 @@ function Testing({ onBackToProject, onOpenReports, onSignOut }: { onBackToProjec
   function handleFile(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (file) setFileName(file.name); }
 
   return <div className="testing-screen">
-    <aside className="testing-sidebar"><button className="testing-brand" onClick={onBackToProject}><span className="testing-mark"><span /></span><strong>SiteSphere</strong><ChevronDown size={14} /></button><div className="testing-sidebar-label">MAIN NAVIGATION</div><nav className="testing-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav><div className="testing-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div></aside>
+    <aside className="testing-sidebar"><button className="testing-brand" onClick={onBackToProject}><span className="testing-mark"><span /></span><strong>SiteSphere</strong><ChevronDown size={14} /></button><div className="testing-sidebar-label">MAIN NAVIGATION</div><nav className="testing-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav><div className="testing-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div></aside>
     <div className="testing-main"><header className="testing-topbar"><button className="testing-menu" aria-label="Open navigation"><Menu size={18} /></button><button className="testing-project" onClick={onBackToProject}><FolderKanban size={13} /> Data Center Alpha</button><label className="testing-global-search"><Search size={13} /><input placeholder="Search site data..." /></label><div className="testing-user"><button aria-label="Notifications"><Bell size={16} /><i /></button><span /><div><strong>Alex Construction</strong><small>Project Manager</small></div><b>AC</b></div></header>
       <main className="testing-content"><div className="testing-heading"><div><h1>System Testing &amp; Commissioning</h1><p>Execute, log, and approve site equipment performance tests.</p></div><div className="testing-actions"><button><Clock3 size={13} /> View History</button><button className="testing-primary"><Upload size={13} /> Bulk Upload Results</button></div></div>
         <section className="testing-summary"><div><span><Check size={15} /></span><small>TOTAL TESTS PASSED</small><strong>142</strong><p>+12 since yesterday</p><i><b style={{ width: '84%' }} /></i><em>84%</em></div><div><span className="red"><X size={15} /></span><small>ACTIVE FAILURES</small><strong>08</strong><p>Requires immediate attention</p><i><b style={{ width: '12%' }} /></i><em>12%</em></div><div><span className="amber"><Clock3 size={15} /></span><small>IN PROGRESS</small><strong>24</strong><p>Currently with field engineers</p><i><b style={{ width: '45%' }} /></i><em>45%</em></div><div><span className="blue"><CircleAlert size={15} /></span><small>DEFERRED REQUIREMENTS</small><strong>05</strong><p>Waiting for site conditions</p></div></section>

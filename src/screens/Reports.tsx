@@ -16,6 +16,7 @@ const rows: ReportRow[] = [
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
+  { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert },
   { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban },
@@ -24,7 +25,7 @@ const navItems = [
   { label: 'Reports', icon: FileBarChart, active: true },
 ];
 
-function Reports({ onBackToProject, onSignOut }: { onBackToProject: () => void; onSignOut: () => void }) {
+function Reports({ onBackToProject, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {
   const [selectedType, setSelectedType] = useState('Issue Trends');
   const [selectedPhases, setSelectedPhases] = useState<string[]>([phases[3], phases[4]]);
   const [selectedCompanies, setSelectedCompanies] = useState(companies);
@@ -42,7 +43,7 @@ function Reports({ onBackToProject, onSignOut }: { onBackToProject: () => void; 
       <aside className="reports-sidebar">
         <button className="reports-brand" onClick={onBackToProject}><span className="reports-brand-mark"><span /></span><strong>SiteSphere</strong><ChevronRight size={14} /></button>
         <div className="reports-sidebar-label">MAIN NAVIGATION</div>
-        <nav className="reports-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label}><Icon size={15} /><span>{label}</span></button>)}</nav>
+        <nav className="reports-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Submittals' ? onOpenSubmittals : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav>
         <div className="reports-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button className="reports-signout" onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
       </aside>
 
@@ -73,3 +74,6 @@ function Reports({ onBackToProject, onSignOut }: { onBackToProject: () => void; 
 }
 
 export default Reports;
+
+
+export default Reports

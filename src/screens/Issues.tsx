@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, UserRound, X } from 'lucide-react';
+import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, UserRound, X } from 'lucide-react';
 
 type Issue = { id: string; title: string; priority: 'Critical' | 'High' | 'Medium' | 'Low'; status: 'Open' | 'In Progress' | 'Under Review' | 'Closed'; assignee: string; initials: string; product: string; phase: string };
 
@@ -13,6 +13,7 @@ const issues: Issue[] = [
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
+  { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert, active: true },
   { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban },
@@ -21,7 +22,7 @@ const navItems = [
   { label: 'Reports', icon: FileBarChart },
 ];
 
-function Issues({ onBackToProject, onSignOut, onReportIssue, onOpenReports }: { onBackToProject: () => void; onSignOut: () => void; onReportIssue: () => void; onOpenReports: () => void }) {
+function Issues({ onBackToProject, onSignOut, onReportIssue, onOpenReports, onOpenSubmittals }: { onBackToProject: () => void; onSignOut: () => void; onReportIssue: () => void; onOpenReports: () => void; onOpenSubmittals: () => void }) {
   const [selectedIssue, setSelectedIssue] = useState<Issue>(issues[0]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [resolved, setResolved] = useState(false);
@@ -30,7 +31,7 @@ function Issues({ onBackToProject, onSignOut, onReportIssue, onOpenReports }: { 
     <aside className="issues-sidebar">
       <button className="issues-brand" onClick={onBackToProject}><span className="issues-brand-mark"><span /></span><strong>SiteSphere</strong><ChevronRight size={15} /></button>
       <div className="issues-sidebar-label">MAIN NAVIGATION</div>
-      <nav className="issues-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav>
+      <nav className="issues-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav>
       <div className="issues-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
     </aside>
 

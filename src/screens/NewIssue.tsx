@@ -1,8 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bell, Building2, CalendarDays, Check, CircleCheck as CheckCircle2, CircleAlert, ClipboardCheck, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, Link2, LogOut, Menu, Paperclip, Search, TestTube as TestTube2, UserRound, X } from 'lucide-react';
+import { Bell, Building2, CalendarDays, Check, CircleCheck as CheckCircle2, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, Link2, LogOut, Menu, Paperclip, Search, TestTube as TestTube2, UserRound, X } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
+  { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert, active: true },
   { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban },
