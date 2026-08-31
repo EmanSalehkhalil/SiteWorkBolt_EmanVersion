@@ -128,5 +128,3 @@ function Milestones({ onBackToProject, onSignOut, onOpenNewMilestone }: { onBack
 
 export default Milestones;
 
-
-export default Milestones
