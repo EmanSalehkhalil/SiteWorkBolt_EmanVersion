@@ -10,8 +10,9 @@ import Reports from '@/screens/Reports';
 import Testing from '@/screens/Testing';
 import Submittals from '@/screens/Submittals';
 import Milestones from '@/screens/Milestones';
+import NewMilestone from '@/screens/NewMilestone';
 
-type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'milestones';
+type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'milestones' | 'new-milestone';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('signin');
@@ -44,7 +45,10 @@ function App() {
     return <Submittals onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'milestones') {
-    return <Milestones onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
+    return <Milestones onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} onOpenNewMilestone={() => setScreen('new-milestone')} />;
+  }
+  if (screen === 'new-milestone') {
+    return <NewMilestone onBackToMilestones={() => setScreen('milestones')} onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
   }
   return <SignIn onSignIn={() => setScreen('projects')} />;
 }

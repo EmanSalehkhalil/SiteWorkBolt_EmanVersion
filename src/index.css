@@ -1202,3 +1202,42 @@ h1 { font-size: 26px; line-height: 1; letter-spacing: -.055em; } .header-count, 
 @media (max-width: 1100px) { .milestones-board { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 900px) { .milestones-screen { grid-template-columns: 1fr; } .milestones-sidebar { display: none; } .milestones-mobile-menu { display: grid; } .milestones-topbar { padding: 0 16px; } .milestones-global-search { width: 160px; } .milestones-user > div { display: none; } .milestones-content { padding: 22px 16px 38px; } .milestones-heading { flex-direction: column; align-items: flex-start; } .milestones-actions { width: 100%; flex-wrap: wrap; } .milestones-actions button { flex: 1; justify-content: center; } .milestones-toolbar-panel { flex-direction: column; } .milestones-configuration { margin-left: 0; } .milestones-summary { flex-direction: column; gap: 12px; align-items: flex-start; } }
 @media (max-width: 620px) { .milestones-board { grid-template-columns: 1fr; } .milestones-footer { flex-direction: column; gap: 10px; align-items: flex-start; padding: 16px; } }
+
+/* ============================================================
+   NEW MILESTONE SCREEN
+   ============================================================ */
+.new-milestone-screen { min-height: 100vh; }
+.new-milestone-backdrop { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 22px; background: rgba(8, 14, 22, .78); }
+.new-milestone-dialog { width: 100%; max-width: 454px; max-height: calc(100vh - 44px); overflow-y: auto; border: 1px solid #dce1e7; border-radius: 7px; background: #fff; box-shadow: 0 22px 65px rgba(0, 0, 0, .26); }
+.new-milestone-dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 22px 17px; }
+.new-milestone-dialog-heading h2 { color: #111b29; font-size: 17px; letter-spacing: -.045em; line-height: 1.1; }
+.new-milestone-dialog-heading p { margin-top: 6px; color: #7a8695; font-size: 11px; line-height: 1.45; }
+.new-milestone-dialog-heading > button { display: grid; place-items: center; padding: 2px; border: 0; color: #6b7787; background: transparent; transition: color .15s; }
+.new-milestone-dialog-heading > button:hover { color: #0a6df4; }
+.new-milestone-dialog form { padding: 0 22px 22px; }
+.new-milestone-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.new-milestone-field { display: flex; flex-direction: column; gap: 7px; margin-top: 15px; }
+.new-milestone-field > span:first-child, .new-milestone-associations legend { color: #3e4856; font-size: 10px; font-weight: 700; }
+.new-milestone-field input, .new-milestone-field select { width: 100%; height: 36px; min-width: 0; padding: 0 10px; border: 1px solid #dbe1e8; border-radius: 5px; outline: 0; color: #687586; background: #fff; font-size: 11px; }
+.new-milestone-field input::placeholder { color: #a0a9b4; }
+.new-milestone-field input:focus, .new-milestone-field select:focus { border-color: #0a6df4; box-shadow: 0 0 0 3px rgba(10,109,244,.1); }
+.new-milestone-select, .new-milestone-date { position: relative; display: flex; align-items: center; }
+.new-milestone-select select { appearance: none; padding-right: 30px; }
+.new-milestone-select svg, .new-milestone-date svg { position: absolute; right: 10px; color: #8692a0; pointer-events: none; }
+.new-milestone-date input { padding-right: 31px; color: #9aa4b1; }
+.new-milestone-date input::-webkit-calendar-picker-indicator { opacity: 0; }
+.new-milestone-associations { margin: 18px 0 0; padding: 0; border: 0; }
+.new-milestone-associations legend { margin-bottom: 8px; padding: 0; }
+.new-milestone-checklist-box { padding: 8px; border: 1px solid #dbe1e8; border-radius: 5px; background: #fbfcfd; }
+.new-milestone-checklist { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 35px; padding: 0 10px; border-bottom: 1px solid #eef1f5; background: #fff; color: #4a5666; font-size: 10px; }
+.new-milestone-checklist:last-of-type { border-bottom: 0; }
+.new-milestone-checklist button { padding: 0; border: 0; color: #0a9fe8; background: transparent; font-size: 9px; font-weight: 600; }
+.new-milestone-checklist button:hover { color: #e26767; }
+.new-milestone-add-checklist { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 29px; margin-top: 7px; border: 1px dashed #cfd8e3; border-radius: 4px; color: #768394; background: #fff; font-size: 10px; }
+.new-milestone-add-checklist:hover { border-color: #0a6df4; color: #0a6df4; background: #f5f9ff; }
+.new-milestone-dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 21px; padding-top: 16px; border-top: 1px solid #eef1f5; }
+.new-milestone-dialog-actions button { height: 34px; padding: 0 15px; border: 1px solid #dbe1e8; border-radius: 5px; color: #647083; background: #fff; font-size: 10px; font-weight: 700; }
+.new-milestone-dialog-actions button:hover { background: #f5f7fa; }
+.new-milestone-dialog-actions .new-milestone-create { border-color: #0e9cda; color: #fff; background: #18a9e4; box-shadow: 0 3px 7px rgba(24,169,228,.2); }
+.new-milestone-dialog-actions .new-milestone-create:hover { background: #0b9bd8; }
+@media (max-width: 620px) { .new-milestone-backdrop { padding: 12px; } .new-milestone-dialog-heading { padding: 18px 18px 15px; } .new-milestone-dialog form { padding: 0 18px 18px; } .new-milestone-field-grid { grid-template-columns: 1fr; gap: 0; } }

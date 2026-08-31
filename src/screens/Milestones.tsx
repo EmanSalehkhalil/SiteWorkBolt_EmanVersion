@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bell, CalendarDays, Check, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, X } from 'lucide-react';
+import { Bell, CalendarDays, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2 } from 'lucide-react';
 
 type MilestoneStatus = 'Done' | 'In Progress' | 'At Risk' | 'Not Started';
 
@@ -63,11 +63,10 @@ const navItems = [
   { label: 'Reports', icon: FileText },
 ];
 
-function Milestones({ onBackToProject, onSignOut }: { onBackToProject: () => void; onSignOut: () => void }) {
+function Milestones({ onBackToProject, onSignOut, onOpenNewMilestone }: { onBackToProject: () => void; onSignOut: () => void; onOpenNewMilestone: () => void }) {
   const [query, setQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [showConfiguration, setShowConfiguration] = useState(false);
-  const [showAddDialog, setShowAddDialog] = useState(false);
   const [showCompleted, setShowCompleted] = useState(true);
   const [showInProgress, setShowInProgress] = useState(true);
   const [showAtRisk, setShowAtRisk] = useState(true);
@@ -107,7 +106,7 @@ function Milestones({ onBackToProject, onSignOut }: { onBackToProject: () => voi
         <header className="milestones-topbar"><button className="milestones-mobile-menu" aria-label="Open navigation"><Menu size={18} /></button><button className="milestones-project" onClick={onBackToProject}><FolderKanban size={13} /> Data Center Alpha - Phase 2</button><label className="milestones-global-search"><Search size={13} /><input placeholder="Search site data..." /></label><div className="milestones-user"><button aria-label="Notifications"><Bell size={16} /><i /></button><span /><div><strong>Alex Construction</strong><small>Project Manager</small></div><b>AC</b></div></header>
 
         <div className="milestones-content">
-          <div className="milestones-heading"><h1>Milestone<br />Setup</h1><div className="milestones-actions"><button onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'selected' : ''}><Filter size={13} /> Filters</button><button onClick={() => setShowConfiguration(!showConfiguration)} className={showConfiguration ? 'selected' : ''}><SlidersHorizontal size={13} /> Configuration</button><button onClick={exportCsv}><Download size={13} /> Export CSV</button><button className="milestones-primary" onClick={() => setShowAddDialog(true)}><Plus size={14} /> Add Milestone</button></div></div>
+          <div className="milestones-heading"><h1>Milestone<br />Setup</h1><div className="milestones-actions"><button onClick={() => setShowFilters(!showFilters)} className={showFilters ? 'selected' : ''}><Filter size={13} /> Filters</button><button onClick={() => setShowConfiguration(!showConfiguration)} className={showConfiguration ? 'selected' : ''}><SlidersHorizontal size={13} /> Configuration</button><button onClick={exportCsv}><Download size={13} /> Export CSV</button><button className="milestones-primary" onClick={onOpenNewMilestone}><Plus size={14} /> Add Milestone</button></div></div>
 
           {(showFilters || showConfiguration) && <div className="milestones-toolbar-panel">
             {showFilters && <div className="milestones-filter-panel"><strong>Filter milestones</strong><label className="milestones-filter-search"><Search size={13} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search milestones..." /></label><label><input type="checkbox" checked={showCompleted} onChange={(event) => setShowCompleted(event.target.checked)} /> Done</label><label><input type="checkbox" checked={showInProgress} onChange={(event) => setShowInProgress(event.target.checked)} /> In Progress</label><label><input type="checkbox" checked={showAtRisk} onChange={(event) => setShowAtRisk(event.target.checked)} /> At Risk / Not Started</label></div>}
@@ -115,7 +114,7 @@ function Milestones({ onBackToProject, onSignOut }: { onBackToProject: () => voi
           </div>}
 
           <section className="milestones-board" aria-label="Project milestones">
-            {visiblePhases.map((phase) => <article className="milestone-phase" key={phase.id}><div className="milestone-phase-heading"><div><h2>{phase.title}</h2><p>{phase.description}</p></div>{phase.id === 'L3' && <span className="milestone-count">Milestones</span>}</div><div className="milestone-list">{phase.milestones.map((milestone) => <div className={`milestone-card milestone-${milestone.status.toLowerCase().replace(/ /g, '-')}`} key={milestone.id}><h3>{milestone.title}</h3><div className="milestone-status-row"><span className={`milestone-status milestone-status-${milestone.status.toLowerCase().replace(/ /g, '-')}`}>{milestone.status === 'At Risk' && '⚠ '}{milestone.status}</span>{milestone.status === 'At Risk' && <span className="milestone-dep">DEP</span>}</div><div className="milestone-date"><CalendarDays size={12} /><span>{milestone.date}{milestone.dateRange ? ` → ${milestone.dateRange}` : ''}</span></div><div className="milestone-progress"><span style={{ width: `${milestone.health}%` }} /></div><div className="milestone-checklists"><i /><span>{milestone.checklists} Associated<br />Checklists</span></div></div>)}{phase.milestones.length === 0 && <div className="milestone-empty">No matching milestones</div>}<button className="milestone-add" onClick={() => setShowAddDialog(true)}><Plus size={13} /> Add to {phase.id}</button></div><div className="milestone-health"><span>PHASE HEALTH</span><b>{phase.health > 0 && phase.health < 100 ? `${phase.health}%` : ''}</b><i><em style={{ width: `${phase.health}%` }} /></i></div></article>)}
+            {visiblePhases.map((phase) => <article className="milestone-phase" key={phase.id}><div className="milestone-phase-heading"><div><h2>{phase.title}</h2><p>{phase.description}</p></div>{phase.id === 'L3' && <span className="milestone-count">Milestones</span>}</div><div className="milestone-list">{phase.milestones.map((milestone) => <div className={`milestone-card milestone-${milestone.status.toLowerCase().replace(/ /g, '-')}`} key={milestone.id}><h3>{milestone.title}</h3><div className="milestone-status-row"><span className={`milestone-status milestone-status-${milestone.status.toLowerCase().replace(/ /g, '-')}`}>{milestone.status === 'At Risk' && '⚠ '}{milestone.status}</span>{milestone.status === 'At Risk' && <span className="milestone-dep">DEP</span>}</div><div className="milestone-date"><CalendarDays size={12} /><span>{milestone.date}{milestone.dateRange ? ` → ${milestone.dateRange}` : ''}</span></div><div className="milestone-progress"><span style={{ width: `${milestone.health}%` }} /></div><div className="milestone-checklists"><i /><span>{milestone.checklists} Associated<br />Checklists</span></div></div>)}{phase.milestones.length === 0 && <div className="milestone-empty">No matching milestones</div>}<button className="milestone-add" onClick={onOpenNewMilestone}><Plus size={13} /> Add to {phase.id}</button></div><div className="milestone-health"><span>PHASE HEALTH</span><b>{phase.health > 0 && phase.health < 100 ? `${phase.health}%` : ''}</b><i><em style={{ width: `${phase.health}%` }} /></i></div></article>)}
           </section>
 
           <div className="milestones-summary"><div><span>12 Completed</span><span><i className="summary-blue" />4 In Progress</span><span>2 At Risk</span></div><span>Project Completion Target: <b>Aug 15, 2024</b></span></div>
@@ -123,9 +122,11 @@ function Milestones({ onBackToProject, onSignOut }: { onBackToProject: () => voi
         <footer className="milestones-footer"><span>© 2024 SiteSphere Construction Systems. All rights reserved.</span><div><a>Documentation</a><a>Support</a><a>Privacy Policy</a></div></footer>
       </main>
 
-      {showAddDialog && <div className="milestones-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowAddDialog(false); }}><section className="milestones-modal" role="dialog" aria-modal="true" aria-labelledby="add-milestone-title"><div className="milestones-modal-heading"><div><span><Flag size={15} /></span><div><h2 id="add-milestone-title">Add Milestone</h2><p>Create a new project milestone.</p></div></div><button onClick={() => setShowAddDialog(false)} aria-label="Close dialog"><X size={16} /></button></div><label><span>Milestone name</span><input placeholder="e.g. Generator Load Bank Test" /></label><label><span>Target date</span><input type="date" /></label><label><span>Project phase</span><select defaultValue="L1"><option value="L1">L1: Factory Acceptance</option><option value="L2">L2: Critical Power Install</option><option value="L3">L3: Functional Testing</option><option value="L4">L4: System Integration</option></select></label><div className="milestones-modal-actions"><button onClick={() => setShowAddDialog(false)}>Cancel</button><button className="milestones-primary" onClick={() => setShowAddDialog(false)}><Check size={14} /> Save Milestone</button></div></section></div>}
     </div>
   );
 }
 
 export default Milestones;
+
+
+export default Milestones
