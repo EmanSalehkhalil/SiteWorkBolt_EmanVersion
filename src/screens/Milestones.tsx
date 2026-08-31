@@ -129,6 +129,3 @@ function Milestones({ onBackToProject, onSignOut }: { onBackToProject: () => voi
 }
 
 export default Milestones;
-
-
-export default Milestones
