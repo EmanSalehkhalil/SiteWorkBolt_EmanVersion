@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bell, Check, ChevronDown, CircleAlert, Download, FileCheck2, FileText, FolderKanban, LayoutDashboard, Link2, LogOut, Menu, MoveVertical as MoreVertical, Search, Settings2, ShieldCheck, TestTube as TestTube2, Upload, X } from 'lucide-react';
+import { Bell, Check, ChevronDown, CircleAlert, Download, FileCheck2, FileText, FolderKanban, History, LayoutDashboard, Link2, LogOut, Menu, MoveVertical as MoreVertical, Search, Settings2, ShieldCheck, TestTube as TestTube2, Upload, Users, Wrench, X } from 'lucide-react';
 
 type SubmittalStatus = 'Approved' | 'Pending Review' | 'Active' | 'Inactive';
 type Submittal = { id: string; title: string; group: string; status: SubmittalStatus; version: string; submittedBy?: string; date?: string; equipment?: string; };
@@ -16,7 +16,8 @@ const groups = ['HSE & Safety Plans', 'RAMS (Risk Assessment)', 'Permits & Certi
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Submittals', icon: FileText, active: true },
   { label: 'Issues', icon: CircleAlert }, { label: 'Checklist Stats', icon: FileCheck2 }, { label: 'Company Checklists', icon: FolderKanban },
-  { label: 'Testing Workflow', icon: TestTube2 }, { label: 'Milestones', icon: ShieldCheck },
+  { label: 'Testing Workflow', icon: TestTube2 }, { label: 'Milestones', icon: ShieldCheck }, { label: 'Reports', icon: FileText },
+  { label: 'Personas', icon: Users }, { label: 'Assets & Equipment', icon: Wrench }, { label: 'Change Log', icon: History },
 ];
 
 function statusClass(status: SubmittalStatus): string { return `submittal-status submittal-${status.toLowerCase().replace(' ', '-')}`; }

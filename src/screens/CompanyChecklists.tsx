@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, RefreshCw, Search, Settings2, TestTube as TestTube2, Wrench } from 'lucide-react';
+import { Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, RefreshCw, Search, Settings2, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
 
 type Phase = { level: string; title: string; status: string; active?: boolean; complete?: boolean };
 type Task = { text: string; meta: string; result: 'PASSED' | 'FAILED' | 'N/A'; issue?: boolean };
@@ -33,6 +33,9 @@ const navItems = [
   { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
+  { label: 'Personas', icon: Users },
+  { label: 'Assets & Equipment', icon: Wrench },
+  { label: 'Change Log', icon: History },
 ];
 
 function ResultButtons({ task }: { task: Task }) {

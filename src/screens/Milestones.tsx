@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bell, CalendarDays, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2 } from 'lucide-react';
+import { Bell, CalendarDays, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
 
 type MilestoneStatus = 'Done' | 'In Progress' | 'At Risk' | 'Not Started';
 
@@ -61,6 +61,9 @@ const navItems = [
   { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag, active: true },
   { label: 'Reports', icon: FileText },
+  { label: 'Personas', icon: Users },
+  { label: 'Assets & Equipment', icon: Wrench },
+  { label: 'Change Log', icon: History },
 ];
 
 function Milestones({ onBackToProject, onSignOut, onOpenNewMilestone }: { onBackToProject: () => void; onSignOut: () => void; onOpenNewMilestone: () => void }) {

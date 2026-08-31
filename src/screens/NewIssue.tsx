@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { Bell, Building2, CalendarDays, Check, CircleCheck as CheckCircle2, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, Link2, LogOut, Menu, Paperclip, Search, TestTube as TestTube2, UserRound, X } from 'lucide-react';
+import { Bell, Building2, CalendarDays, Check, CircleCheck as CheckCircle2, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, Link2, LogOut, Menu, Paperclip, Search, TestTube as TestTube2, UserRound, Users, Wrench, X } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
@@ -10,6 +10,9 @@ const navItems = [
   { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
+  { label: 'Personas', icon: Users },
+  { label: 'Assets & Equipment', icon: Wrench },
+  { label: 'Change Log', icon: History },
 ];
 
 function NewIssue({ onBackToIssues, onSignOut }: { onBackToIssues: () => void; onSignOut: () => void }) {

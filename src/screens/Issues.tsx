@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, UserRound, X } from 'lucide-react';
+import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, UserRound, Users, Wrench, X } from 'lucide-react';
 
 type Issue = { id: string; title: string; priority: 'Critical' | 'High' | 'Medium' | 'Low'; status: 'Open' | 'In Progress' | 'Under Review' | 'Closed'; assignee: string; initials: string; product: string; phase: string };
 
@@ -20,6 +20,9 @@ const navItems = [
   { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
+  { label: 'Personas', icon: Users },
+  { label: 'Assets & Equipment', icon: Wrench },
+  { label: 'Change Log', icon: History },
 ];
 
 function Issues({ onBackToProject, onSignOut, onReportIssue, onOpenReports, onOpenSubmittals }: { onBackToProject: () => void; onSignOut: () => void; onReportIssue: () => void; onOpenReports: () => void; onOpenSubmittals: () => void }) {

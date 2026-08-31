@@ -1,4 +1,4 @@
-import { Bell, Building2, CircleCheck as CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Clock3, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Search, Settings2, SlidersHorizontal, TestTube as TestTube2 } from 'lucide-react';
+import { Bell, Building2, CircleCheck as CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Clock3, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
 
 type Company = { name: string; tasks: string; verified: string; progress: number; status: 'On Track' | 'Delayed' | 'Ahead' };
 
@@ -19,6 +19,9 @@ const navItems = [
   { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
+  { label: 'Personas', icon: Users },
+  { label: 'Assets & Equipment', icon: Wrench },
+  { label: 'Change Log', icon: History },
 ];
 
 function ChecklistDashboard({ onBackToProject, onOpenReports, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {

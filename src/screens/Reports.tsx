@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Activity, Bell, CalendarDays, Check, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, FileText, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, Printer, Search, Settings2, Share2, SlidersHorizontal, TestTube as TestTube2, TrendingUp, X } from 'lucide-react';
+import { Activity, Bell, CalendarDays, Check, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, FileText, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Printer, Search, Settings2, Share2, SlidersHorizontal, TestTube as TestTube2, TrendingUp, Users, Wrench, X } from 'lucide-react';
 
 type ReportRow = { id: string; subject: string; company: string; priority: 'High' | 'Critical' | 'Medium' | 'Low'; status: string; date: string };
 
@@ -23,6 +23,9 @@ const navItems = [
   { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart, active: true },
+  { label: 'Personas', icon: Users },
+  { label: 'Assets & Equipment', icon: Wrench },
+  { label: 'Change Log', icon: History },
 ];
 
 function Reports({ onBackToProject, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {

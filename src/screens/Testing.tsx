@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent } from 'react';
-import { Activity, Bell, Check, ChevronDown, CircleAlert, ClipboardCheck, Clock3, FileText, ChartBar as FileBarChart, Flag, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, Search, Settings2, TestTube as TestTube2, Upload, UserRound, X } from 'lucide-react';
+import { Activity, Bell, Check, ChevronDown, CircleAlert, ClipboardCheck, Clock3, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, Search, Settings2, TestTube as TestTube2, Upload, UserRound, Users, Wrench, X } from 'lucide-react';
 
 type Status = 'Passed' | 'In Progress' | 'Not Started' | 'Failed' | 'Passed with Exceptions' | 'Deferred Testing Requirements';
 type Test = { id: string; name: string; assignee: string; status: Status; attempts: number };
@@ -8,6 +8,7 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Submittals', icon: FileText }, { label: 'Issues', icon: CircleAlert },
   { label: 'Checklist Stats', icon: ClipboardCheck }, { label: 'Company Checklists', icon: FolderKanban },
   { label: 'Testing Workflow', icon: TestTube2, active: true }, { label: 'Milestones', icon: Flag }, { label: 'Reports', icon: FileBarChart },
+  { label: 'Personas', icon: Users }, { label: 'Assets & Equipment', icon: Wrench }, { label: 'Change Log', icon: History },
 ];
 const tests: Test[] = [
   { id: 'LVS-01-01', name: 'Visual Inspection & Grounding', assignee: 'Sarah Jenkins', status: 'Passed', attempts: 1 },
