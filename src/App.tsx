@@ -12,8 +12,9 @@ import Submittals from '@/screens/Submittals';
 import Milestones from '@/screens/Milestones';
 import NewMilestone from '@/screens/NewMilestone';
 import Personas from '@/screens/Personas';
+import NewPersona from '@/screens/NewPersona';
 
-type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'milestones' | 'new-milestone';
+type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'new-persona' | 'milestones' | 'new-milestone';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('signin');
@@ -43,7 +44,10 @@ function App() {
     return <Testing onBackToProject={() => setScreen('dashboard')} onOpenReports={() => setScreen('reports')} onOpenSubmittals={() => setScreen('submittals')} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'personas') {
-    return <Personas onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
+    return <Personas onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} onOpenNewPersona={() => setScreen('new-persona')} />;
+  }
+  if (screen === 'new-persona') {
+    return <NewPersona onBackToPersonas={() => setScreen('personas')} onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'submittals') {
     return <Submittals onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
