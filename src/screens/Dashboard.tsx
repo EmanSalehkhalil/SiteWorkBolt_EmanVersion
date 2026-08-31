@@ -20,14 +20,14 @@ const issueCards = [
   { label: 'SAFETY ISSUES (HSE)', total: '5', resolved: '1', rate: '20.0%', change: '+1', color: 'green' },
 ];
 
-function Dashboard({ onBackToProjects, onOpenChecklist, onOpenCompanyChecklists, onOpenIssues, onOpenReports, onOpenTesting, onOpenSubmittals, onOpenMilestones, onSignOut }: { onBackToProjects: () => void; onOpenChecklist: () => void; onOpenCompanyChecklists: () => void; onOpenIssues: () => void; onOpenReports: () => void; onOpenTesting: () => void; onOpenSubmittals: () => void; onOpenMilestones: () => void; onSignOut: () => void }) {
+function Dashboard({ onBackToProjects, onOpenChecklist, onOpenCompanyChecklists, onOpenIssues, onOpenReports, onOpenTesting, onOpenSubmittals, onOpenMilestones, onOpenPersonas, onSignOut }: { onBackToProjects: () => void; onOpenChecklist: () => void; onOpenCompanyChecklists: () => void; onOpenIssues: () => void; onOpenReports: () => void; onOpenTesting: () => void; onOpenSubmittals: () => void; onOpenMilestones: () => void; onOpenPersonas: () => void; onSignOut: () => void }) {
   return (
     <div className="project-dashboard-screen">
       <aside className="project-dashboard-sidebar">
         <button className="project-dashboard-brand" onClick={onBackToProjects}><span className="project-dashboard-mark"><span /></span><strong>SiteSphere</strong></button>
         <div className="project-sidebar-label">MAIN NAVIGATION</div>
         <nav className="project-dashboard-nav">
-          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Issues' ? onOpenIssues : label === 'Checklist Stats' ? onOpenChecklist : label === 'Company Checklists' ? onOpenCompanyChecklists : label === 'Testing Workflow' ? onOpenTesting : label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : label === 'Milestones' ? onOpenMilestones : undefined}><Icon size={16} /><span>{label}</span></button>)}
+          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Issues' ? onOpenIssues : label === 'Checklist Stats' ? onOpenChecklist : label === 'Company Checklists' ? onOpenCompanyChecklists : label === 'Testing Workflow' ? onOpenTesting : label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : label === 'Milestones' ? onOpenMilestones : label === 'Personas' ? onOpenPersonas : undefined}><Icon size={16} /><span>{label}</span></button>)}
         </nav>
         <div className="project-sidebar-bottom"><button><Settings2 size={16} /> Switch Project</button><button className="project-signout" onClick={onSignOut}><LogOut size={16} /> Sign Out</button></div>
       </aside>

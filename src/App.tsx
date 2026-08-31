@@ -11,8 +11,9 @@ import Testing from '@/screens/Testing';
 import Submittals from '@/screens/Submittals';
 import Milestones from '@/screens/Milestones';
 import NewMilestone from '@/screens/NewMilestone';
+import Personas from '@/screens/Personas';
 
-type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'milestones' | 'new-milestone';
+type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'milestones' | 'new-milestone';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('signin');
@@ -21,7 +22,7 @@ function App() {
     return <Projects onSignOut={() => setScreen('signin')} onOpenDashboard={() => setScreen('dashboard')} />;
   }
   if (screen === 'dashboard') {
-    return <Dashboard onBackToProjects={() => setScreen('projects')} onOpenChecklist={() => setScreen('checklist')} onOpenCompanyChecklists={() => setScreen('company')} onOpenIssues={() => setScreen('issues')} onOpenReports={() => setScreen('reports')} onOpenTesting={() => setScreen('testing')} onOpenSubmittals={() => setScreen('submittals')} onOpenMilestones={() => setScreen('milestones')} onSignOut={() => setScreen('signin')} />;
+    return <Dashboard onBackToProjects={() => setScreen('projects')} onOpenChecklist={() => setScreen('checklist')} onOpenCompanyChecklists={() => setScreen('company')} onOpenIssues={() => setScreen('issues')} onOpenReports={() => setScreen('reports')} onOpenTesting={() => setScreen('testing')} onOpenSubmittals={() => setScreen('submittals')} onOpenMilestones={() => setScreen('milestones')} onOpenPersonas={() => setScreen('personas')} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'checklist') {
     return <ChecklistDashboard onBackToProject={() => setScreen('dashboard')} onOpenReports={() => setScreen('reports')} onOpenSubmittals={() => setScreen('submittals')} onSignOut={() => setScreen('signin')} />;
@@ -40,6 +41,9 @@ function App() {
   }
   if (screen === 'testing') {
     return <Testing onBackToProject={() => setScreen('dashboard')} onOpenReports={() => setScreen('reports')} onOpenSubmittals={() => setScreen('submittals')} onSignOut={() => setScreen('signin')} />;
+  }
+  if (screen === 'personas') {
+    return <Personas onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'submittals') {
     return <Submittals onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
