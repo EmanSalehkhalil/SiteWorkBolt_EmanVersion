@@ -64,4 +64,3 @@ function ChangeLog({ onBackToProject, onSignOut }: { onBackToProject: () => void
 export default ChangeLog;
 
 
-export default ChangeLog
