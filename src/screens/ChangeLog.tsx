@@ -1,177 +1,67 @@
 import { useMemo, useState } from 'react';
-import { Bell, ChevronDown, CircleAlert, Download, FileText, Filter, FolderKanban, History, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TrendingUp, Users, Wrench, Zap } from 'lucide-react';
+import { AlertTriangle, BarChart3, Bell, Check, ChevronDown, CircleCheck, CircleDot, Clock3, Download, FileText, Filter, History, List, MessageSquare, MoreVertical, Plus, Search, Settings2, ShieldCheck, Table2, UserRound, X } from 'lucide-react';
 
-type ChangeType = 'Issue' | 'Checklist' | 'Submittal' | 'Milestone' | 'Asset' | 'Persona';
-type ChangeStatus = 'Created' | 'Updated' | 'Resolved' | 'Deleted' | 'Approved';
-type ChangeEntry = {
-  id: string;
-  title: string;
-  type: ChangeType;
-  status: ChangeStatus;
-  user: string;
-  initials: string;
-  detail: string;
-  timestamp: string;
-  ref: string;
-  impact: 'High' | 'Medium' | 'Low';
-};
+type ActivityStatus = 'Completed' | 'Returned' | 'In Progress';
+type Activity = { id: string; title: string; description: string; status: ActivityStatus; user: string; role: string; date: string; tags: string[]; checklist: string; approved?: string; rejected?: string; unread?: string; };
 
-const entries: ChangeEntry[] = [
-  { id: 'CL-2041', title: 'Critical issue resolved on CRAC Unit #4', type: 'Issue', status: 'Resolved', user: 'Mark Wilson', initials: 'MW', detail: 'Modbus gateway communication restored after firmware reflash and cable replacement on Sector 4 BMS loop.', timestamp: '2 hours ago', ref: 'ISS-4201', impact: 'High' },
-  { id: 'CL-2040', title: 'L2 Delivery checklist updated for Switchgear', type: 'Checklist', status: 'Updated', user: 'Sarah Chen', initials: 'SC', detail: 'Added torque verification step for mounting bolts on MasterPact MTZ2 breaker installation.', timestamp: '5 hours ago', ref: 'L2-CHK-092', impact: 'Medium' },
-  { id: 'CL-2039', title: 'New submittal uploaded: LV Switchgear RAMS', type: 'Submittal', status: 'Created', user: 'Sarah Chen', initials: 'SC', detail: 'Revision v1.2 of risk assessment method statement submitted for manager review.', timestamp: 'Yesterday', ref: 'SUB-RAMS-004', impact: 'Medium' },
-  { id: 'CL-2038', title: 'Milestone "Energization" marked complete', type: 'Milestone', status: 'Approved', user: 'Alex Construction', initials: 'AC', detail: 'Phase 2 energization milestone approved by project sponsor after final inspection walkdown.', timestamp: 'Yesterday', ref: 'MST-014', impact: 'High' },
-  { id: 'CL-2037', title: 'Asset record updated: Generator GEN-02-B', type: 'Asset', status: 'Updated', user: 'David Miller', initials: 'DM', detail: 'Updated serial number and commissioning date after factory acceptance test completion.', timestamp: '2 days ago', ref: 'AST-GEN-02', impact: 'Low' },
-  { id: 'CL-2036', title: 'New persona added: Commissioning Engineer', type: 'Persona', status: 'Created', user: 'Alex Construction', initials: 'AC', detail: 'Created persona profile for field commissioning engineer role with L3 testing permissions.', timestamp: '3 days ago', ref: 'PER-008', impact: 'Low' },
-  { id: 'CL-2035', title: 'Submittal approved: Generator Commissioning RAMS', type: 'Submittal', status: 'Approved', user: 'Mark Wilson', initials: 'MW', detail: 'Revision v3.0 of generator commissioning RAMS approved for execution.', timestamp: '3 days ago', ref: 'SUB-RAMS-005', impact: 'Medium' },
-  { id: 'CL-2034', title: 'Checklist item failed: Clearance verification', type: 'Checklist', status: 'Updated', user: 'Sarah Chen', initials: 'SC', detail: 'NEC/IEC clearance verification failed during installation check — linked issue created.', timestamp: '4 days ago', ref: 'L2-CHK-092', impact: 'High' },
+const activities: Activity[] = [
+  { id: 'CHG-2024-001', title: 'Main Breaker Installation - Section B', description: 'Successfully installed the 400A main breaker. Waiting for secondary inspection from the utility company.', status: 'Completed', user: 'Sarah Jenkins', role: 'Lead Electrical Engineer', date: '2024-05-20 10:30 AM', tags: ['GenSet-04 (Resolved 09:00 AM)', 'Power-Panel-B'], checklist: '2 Approved', approved: 'Completed' },
+  { id: 'CHG-2024-002', title: 'HVAC Ducting Leakage Test', description: 'Conducted pressure test on newly installed ductwork in the server room. Minor leaks identified in joint 42-A.', status: 'Returned', user: 'Michael Chen', role: 'Mechanical Supervisor', date: '2024-05-20 11:15 AM', tags: ['Chiller-Unit-2 (Open)'], checklist: '2 Rejected', rejected: 'Returned', unread: '1 New Replies' },
+  { id: 'CHG-2024-003', title: 'Foundation Slab Rebar Inspection', description: 'Rebar layout for Phase 2 foundation slab completed. Ready for structural engineer sign-off.', status: 'In Progress', user: 'Alex Rodriguez', role: 'Structural Lead', date: '2024-05-19 02:45 PM', tags: ['Excavator-XP', 'Concrete-Mixer-01'], checklist: '2 Approved', approved: 'In Progress' },
 ];
 
-const typeFilters: ChangeType[] = ['Issue', 'Checklist', 'Submittal', 'Milestone', 'Asset', 'Persona'];
-const statusFilters: ChangeStatus[] = ['Created', 'Updated', 'Resolved', 'Deleted', 'Approved'];
-const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Submittals', icon: FileText }, { label: 'Issues', icon: CircleAlert },
-  { label: 'Checklist Stats', icon: SlidersHorizontal }, { label: 'Company Checklists', icon: FolderKanban },
-  { label: 'Testing Workflow', icon: Zap }, { label: 'Milestones', icon: TrendingUp }, { label: 'Reports', icon: FileText },
-  { label: 'Personas', icon: Users }, { label: 'Assets & Equipment', icon: Wrench }, { label: 'Change Log', icon: History, active: true },
+const metrics = [
+  { label: 'TOTAL LOGS', value: '1,248', change: '+12%', icon: History, tone: 'blue' },
+  { label: 'STARTED', value: '86', change: '+5%', icon: CircleDot, tone: 'dark' },
+  { label: 'IN PROGRESS', value: '142', change: '-2%', icon: Clock3, tone: 'red' },
+  { label: 'COMPLETED', value: '892', change: '+18%', icon: CircleCheck, tone: 'green' },
+  { label: 'RETURNED', value: '24', change: '+4%', icon: AlertTriangle, tone: 'orange' },
+  { label: 'OVERDUE', value: '12', change: '-30%', icon: AlertTriangle, tone: 'red' },
+  { label: 'THIS WEEK', value: '156', change: '+20%', icon: Clock3, tone: 'gray' },
+  { label: 'THIS MONTH', value: '642', change: '+8%', icon: History, tone: 'gray' },
 ];
-
-function typeIcon(type: ChangeType) {
-  if (type === 'Issue') return <CircleAlert size={14} />;
-  if (type === 'Checklist') return <SlidersHorizontal size={14} />;
-  if (type === 'Submittal') return <FileText size={14} />;
-  if (type === 'Milestone') return <TrendingUp size={14} />;
-  if (type === 'Asset') return <Wrench size={14} />;
-  return <Users size={14} />;
-}
-
-function statusClass(status: ChangeStatus): string {
-  return `cl-status cl-${status.toLowerCase()}`;
-}
 
 function ChangeLog({ onBackToProject, onSignOut }: { onBackToProject: () => void; onSignOut: () => void }) {
   const [query, setQuery] = useState('');
-  const [type, setType] = useState('All Types');
-  const [status, setStatus] = useState('All Statuses');
-  const [selectedId, setSelectedId] = useState('CL-2041');
+  const [view, setView] = useState<'Timeline' | 'Table'>('Timeline');
   const [notice, setNotice] = useState('');
-
-  const filtered = useMemo(() => entries.filter((item) => {
-    const matchesQuery = `${item.title} ${item.id} ${item.ref} ${item.user}`.toLowerCase().includes(query.toLowerCase());
-    const matchesType = type === 'All Types' || item.type === type;
-    const matchesStatus = status === 'All Statuses' || item.status === status;
-    return matchesQuery && matchesType && matchesStatus;
-  }), [query, status, type]);
-
-  const selected = entries.find((item) => item.id === selectedId) ?? entries[0];
+  const filtered = useMemo(() => activities.filter((item) => `${item.title} ${item.description} ${item.id} ${item.user}`.toLowerCase().includes(query.toLowerCase())), [query]);
 
   function notify(message: string): void { setNotice(message); window.setTimeout(() => setNotice(''), 2200); }
 
-  return <div className="cl-screen">
-    <aside className="cl-sidebar">
-      <button className="cl-brand" onClick={onBackToProject}><span className="cl-mark"><span /></span><strong>SiteSphere</strong></button>
-      <div className="cl-sidebar-label">MAIN NAVIGATION</div>
-      <nav className="cl-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label}><Icon size={15} /><span>{label}</span></button>)}</nav>
-      <div className="cl-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
-    </aside>
-    <div className="cl-main">
-      <header className="cl-topbar">
-        <button className="cl-menu" aria-label="Open navigation"><Menu size={18} /></button>
-        <button className="cl-crumb" onClick={onBackToProject}><FolderKanban size={14} /> Data Center Alpha <ChevronDown size={12} /></button>
-        <span className="cl-crumb-divider">›</span>
-        <strong>Change Log</strong>
-        <label className="cl-global-search"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search changes, refs, or users..." /></label>
-        <div className="cl-user"><button aria-label="Notifications"><Bell size={17} /><i /></button><span /><div><strong>Alex Construction</strong><small>Project Manager</small></div><b>AC</b></div>
-      </header>
-      <main className="cl-content">
-        <div className="cl-heading">
-          <div><h1>Change Log</h1><p>A complete audit trail of every change made across the project.</p></div>
-          <div className="cl-heading-actions">
-            <button onClick={() => notify('Exporting change log')}><Download size={13} /> Export Log</button>
-            <button className="cl-primary" onClick={() => notify('New entry form opened')}><Plus size={13} /> New Entry</button>
-          </div>
+  return <div className="activity-screen">
+    <header className="activity-header">
+      <button className="activity-brand" onClick={onBackToProject}><span className="activity-logo"><span /></span><strong>SiteSphere <em>Pro</em></strong></button>
+      <div className="activity-title"><h1>Change Log <small>v2.4</small></h1><button onClick={onBackToProject}>Project Alpha Expansion <ChevronDown size={12} /></button><span>›</span><small>Zone 4-B Industrial</small></div>
+      <div className="activity-updated"><small>LAST UPDATED</small><strong>Today, 11:42 AM</strong></div>
+      <div className="activity-header-actions"><button onClick={() => notify('Exporting change log')}><Download size={13} /> Export Logs</button><button onClick={() => notify('Report generation started')}><FileText size={13} /> Generate Report</button><button className="activity-primary" onClick={() => notify('New log entry opened')}><Plus size={14} /> Add Log Entry</button><button className="activity-notification" aria-label="Notifications"><Bell size={16} /><i /></button><span className="activity-avatar">AC</span><button className="activity-menu" aria-label="Account menu"><MoreVertical size={16} /></button></div>
+    </header>
+
+    <main className="activity-content">
+      <section className="activity-metrics">{metrics.map(({ label, value, change, icon: Icon, tone }) => <article className="activity-metric" key={label}><div className="activity-metric-top"><span className={`activity-metric-icon ${tone}`}><Icon size={13} /></span><em className={change.startsWith('-') ? 'negative' : ''}>{change}</em></div><small>{label}</small><strong>{value}</strong></article>)}</section>
+
+      <section className="activity-filters">
+        <label className="activity-search"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Global search across all log parameters..." /></label>
+        <button className="filter-chip danger" onClick={() => notify('Showing equipment issues')}><AlertTriangle size={13} /> Has Equipment Issues</button><button className="filter-chip blue" onClick={() => notify('Showing unread replies')}><MessageSquare size={13} /> Has Unread Replies</button><button className="filter-chip orange" onClick={() => notify('Showing checklist rejections')}><CircleCheck size={13} /> Checklist: Has Rejections</button>
+        <div className="activity-filter-row"><button>Status: All <ChevronDown size={11} /></button><button>Phase: All <ChevronDown size={11} /></button><button>Discipline: All <ChevronDown size={11} /></button><button>Equipment: All <ChevronDown size={11} /></button><button>Category: All <ChevronDown size={11} /></button><button>Priority: All <ChevronDown size={11} /></button></div>
+      </section>
+
+      <section className="activity-workspace">
+        <div className="activity-stream">
+          <div className="activity-stream-heading"><div><h2><List size={15} /> Project Activity Stream</h2><p>Showing {filtered.length * 14} filtered results out of 1,248 total entries.</p></div><div className="activity-view-toggle"><button className={view === 'Timeline' ? 'active' : ''} onClick={() => setView('Timeline')}><List size={12} /> Timeline</button><button className={view === 'Table' ? 'active' : ''} onClick={() => setView('Table')}><Table2 size={12} /> Table</button></div></div>
+          {view === 'Timeline' ? <div className="activity-timeline">{filtered.map((item, index) => <article className="activity-card" key={item.id}><div className={`activity-marker marker-${item.status.toLowerCase().replace(' ', '-')}`}>{item.status === 'Returned' ? <AlertTriangle size={15} /> : item.status === 'Completed' ? <Check size={14} /> : <Clock3 size={14} />}</div><div className="activity-card-content"><div className="activity-card-top"><span>{item.id}</span>{item.unread && <b className="reply-pill">{item.unread}</b>}<strong>{item.status}</strong></div><h3>{item.title}</h3><p>{item.description}</p><div className="activity-tags">{item.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><div className="activity-checklist"><span>CHECKLIST:</span><b className={item.rejected ? 'check-rejected' : ''}>{item.checklist}</b>{item.rejected && <b className="check-na">1 N/A</b>}</div><div className="activity-author"><span className="author-avatar">{item.user.split(' ').map((name) => name[0]).join('')}</span><div><strong>{item.user}</strong><small>{item.role} • {item.date}</small></div><button onClick={() => notify(`Viewing details for ${item.id}`)}><List size={12} /> Details</button><MoreVertical size={15} /></div></div></article>)}</div> : <div className="activity-table">{filtered.map((item) => <div key={item.id}><span>{item.id}</span><strong>{item.title}</strong><em>{item.status}</em><small>{item.user}</small></div>)}</div>}
+          <button className="activity-load" onClick={() => notify('Loading previous activities')}><History size={13} /> Load Previous Activities</button>
         </div>
 
-        <section className="cl-stat-grid">
-          <div className="cl-stat"><span className="cl-stat-icon blue"><History size={16} /></span><small>TOTAL CHANGES</small><strong>2,041</strong><em>+47 this week</em></div>
-          <div className="cl-stat"><span className="cl-stat-icon green"><TrendingUp size={16} /></span><small>APPROVED</small><strong>1,856</strong><em>91% approval rate</em></div>
-          <div className="cl-stat"><span className="cl-stat-icon amber"><CircleAlert size={16} /></span><small>HIGH IMPACT</small><strong>128</strong><em>Requires attention</em></div>
-          <div className="cl-stat"><span className="cl-stat-icon purple"><Users size={16} /></span><small>ACTIVE CONTRIBUTORS</small><strong>24</strong><em>Across 6 teams</em></div>
-        </section>
-
-        <div className="cl-workspace">
-          <section className="cl-timeline-panel">
-            <div className="cl-filter-bar">
-              <label>TYPE<select value={type} onChange={(event) => setType(event.target.value)}><option>All Types</option>{typeFilters.map((item) => <option key={item}>{item}</option>)}</select></label>
-              <label>STATUS<select value={status} onChange={(event) => setStatus(event.target.value)}><option>All Statuses</option>{statusFilters.map((item) => <option key={item}>{item}</option>)}</select></label>
-              <label>IMPACT<select><option>All Impact</option><option>High</option><option>Medium</option><option>Low</option></select></label>
-              <label>USER<select><option>All Users</option></select></label>
-              <button className="cl-filter-apply" onClick={() => notify(`${filtered.length} changes found`)}><Filter size={13} /> Apply</button>
-            </div>
-
-            <div className="cl-timeline">
-              {filtered.map((item, index) => <article className={`cl-entry ${item.id === selectedId ? 'selected' : ''}`} key={item.id} onClick={() => setSelectedId(item.id)}>
-                <div className="cl-entry-marker">
-                  <span className={`cl-entry-dot cl-dot-${item.status.toLowerCase()}`} />
-                  {index < filtered.length - 1 && <i className="cl-entry-line" />}
-                </div>
-                <div className="cl-entry-body">
-                  <div className="cl-entry-head">
-                    <span className={`cl-entry-type cl-type-${item.type.toLowerCase()}`}>{typeIcon(item.type)} {item.type}</span>
-                    <em className={statusClass(item.status)}>{item.status}</em>
-                    <em className={`cl-impact cl-impact-${item.impact.toLowerCase()}`}>{item.impact}</em>
-                    <small className="cl-entry-time">{item.timestamp}</small>
-                  </div>
-                  <h3>{item.title}</h3>
-                  <p>{item.detail}</p>
-                  <div className="cl-entry-meta">
-                    <span className="cl-entry-user"><i>{item.initials}</i> {item.user}</span>
-                    <span className="cl-entry-ref">Ref: {item.ref}</span>
-                    <span className="cl-entry-id">{item.id}</span>
-                  </div>
-                </div>
-              </article>)}
-              {!filtered.length && <div className="cl-empty"><History size={24} /><strong>No changes match these filters</strong><span>Try clearing a filter or searching for another term.</span></div>}
-            </div>
-          </section>
-
-          <aside className="cl-detail-panel">
-            <div className="cl-detail-head">
-              <span className="cl-detail-id">{selected.id}</span>
-              <strong>{selected.title}</strong>
-            </div>
-            <div className="cl-detail-status-row">
-              <div><small>STATUS</small><em className={statusClass(selected.status)}>{selected.status}</em></div>
-              <div><small>IMPACT</small><em className={`cl-impact cl-impact-${selected.impact.toLowerCase()}`}>{selected.impact}</em></div>
-              <div><small>TYPE</small><span className="cl-detail-type">{selected.type}</span></div>
-            </div>
-            <div className="cl-detail-section">
-              <small>DESCRIPTION</small>
-              <p>{selected.detail}</p>
-            </div>
-            <div className="cl-detail-section">
-              <small>CHANGED BY</small>
-              <div className="cl-detail-user"><i>{selected.initials}</i><div><strong>{selected.user}</strong><small>Project Manager</small></div></div>
-            </div>
-            <div className="cl-detail-section">
-              <small>REFERENCE</small>
-              <span className="cl-detail-ref">{selected.ref}</span>
-            </div>
-            <div className="cl-detail-section">
-              <small>TIMESTAMP</small>
-              <span className="cl-detail-time">{selected.timestamp}</span>
-            </div>
-            <div className="cl-detail-actions">
-              <button onClick={() => notify('Change reverted')}><History size={13} /> Revert</button>
-              <button className="cl-approve" onClick={() => notify('Change approved')}><TrendingUp size={13} /> Approve</button>
-            </div>
-          </aside>
-        </div>
-      </main>
-      <footer className="cl-footer"><span>© 2024 SiteSphere Construction Systems. All rights reserved.</span><div><a>Documentation</a><a>Support</a><a>Privacy Policy</a></div></footer>
-    </div>
-    {notice && <div className="cl-toast">{notice}</div>}
+        <aside className="activity-insights"><h2><BarChart3 size={15} /> Activity Insights</h2><section><h3>STATUS DISTRIBUTION</h3><div className="activity-donut"><span /></div><div className="activity-legend"><span><i className="legend-completed" />Completed <b>71%</b></span><span><i className="legend-progress" />In Progress <b>11%</b></span><span><i className="legend-started" />Started <b>7%</b></span><span><i className="legend-returned" />Returned <b>4%</b></span></div></section><section><h3>MONTHLY ACTIVITY TREND</h3><div className="activity-chart"><svg viewBox="0 0 300 130" role="img" aria-label="Monthly activity trend"><path d="M12 108 C40 118, 58 118, 75 108 S120 75, 145 66 S194 52, 220 37 S263 16, 290 5" /><circle cx="12" cy="108" r="2.5" /><circle cx="75" cy="108" r="2.5" /><circle cx="145" cy="66" r="2.5" /><circle cx="220" cy="37" r="2.5" /><circle cx="290" cy="5" r="2.5" /></svg><div><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div></div></section><section className="recent-interactions"><h2><MessageSquare size={14} /> Recent Interactions</h2>{['Sarah J. added a comment on CHG-2024-001', 'System marked overdue CHG-2024-005', 'Michael C. reopened log CHG-2024-002', 'Alex R. completed rebar audit CHG-2024-003'].map((item, index) => <p key={item}><span className={`interaction-avatar avatar-${index}`}>{['SJ', 'SY', 'MC', 'AR'][index]}</span><strong>{item}<small>{index === 0 ? '2m ago' : index === 1 ? '15m ago' : index === 2 ? '1h ago' : '3h ago'}</small></strong></p>)}<button className="view-feed" onClick={() => notify('Opening full activity feed')}>View Full Feed</button></section><section className="review-card"><span><UserRound size={17} /></span><strong>Review Required?</strong><p>Senior Management accounts have the authority to bypass "Returned" states and finalize logs manually.</p><button onClick={() => notify('High-level review requested')}>Request High-Level Review</button></section></aside>
+      </section>
+    </main>
+    <footer className="activity-footer"><strong>SiteSphere Pro v2.4.1 Build 20240520</strong><div><span><FileText size={10} /> API Documentation</span><span><ShieldCheck size={10} /> Security Policy</span></div><div><span>System Operational</span><span>© 2024 SiteSphere Industrial Systems LLC.</span></div></footer>
+    {notice && <div className="activity-toast">{notice}</div>}
   </div>;
 }
 
 export default ChangeLog;
+
+
+export default ChangeLog
