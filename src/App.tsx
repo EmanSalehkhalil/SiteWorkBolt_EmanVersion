@@ -14,8 +14,9 @@ import NewMilestone from '@/screens/NewMilestone';
 import Personas from '@/screens/Personas';
 import NewPersona from '@/screens/NewPersona';
 import AssetsEquip from '@/screens/AssetsEquip';
+import ChangeLog from '@/screens/ChangeLog';
 
-type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'new-persona' | 'assets' | 'milestones' | 'new-milestone';
+type Screen = 'signin' | 'projects' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'new-persona' | 'assets' | 'milestones' | 'new-milestone' | 'changelog';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('signin');
@@ -24,7 +25,7 @@ function App() {
     return <Projects onSignOut={() => setScreen('signin')} onOpenDashboard={() => setScreen('dashboard')} />;
   }
   if (screen === 'dashboard') {
-    return <Dashboard onBackToProjects={() => setScreen('projects')} onOpenChecklist={() => setScreen('checklist')} onOpenCompanyChecklists={() => setScreen('company')} onOpenIssues={() => setScreen('issues')} onOpenReports={() => setScreen('reports')} onOpenTesting={() => setScreen('testing')} onOpenSubmittals={() => setScreen('submittals')} onOpenMilestones={() => setScreen('milestones')} onOpenPersonas={() => setScreen('personas')} onOpenAssets={() => setScreen('assets')} onSignOut={() => setScreen('signin')} />;
+    return <Dashboard onBackToProjects={() => setScreen('projects')} onOpenChecklist={() => setScreen('checklist')} onOpenCompanyChecklists={() => setScreen('company')} onOpenIssues={() => setScreen('issues')} onOpenReports={() => setScreen('reports')} onOpenTesting={() => setScreen('testing')} onOpenSubmittals={() => setScreen('submittals')} onOpenMilestones={() => setScreen('milestones')} onOpenPersonas={() => setScreen('personas')} onOpenAssets={() => setScreen('assets')} onOpenChangeLog={() => setScreen('changelog')} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'checklist') {
     return <ChecklistDashboard onBackToProject={() => setScreen('dashboard')} onOpenReports={() => setScreen('reports')} onOpenSubmittals={() => setScreen('submittals')} onSignOut={() => setScreen('signin')} />;
@@ -61,6 +62,9 @@ function App() {
   }
   if (screen === 'new-milestone') {
     return <NewMilestone onBackToMilestones={() => setScreen('milestones')} onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
+  }
+  if (screen === 'changelog') {
+    return <ChangeLog onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
   }
   return <SignIn onSignIn={() => setScreen('projects')} />;
 }
