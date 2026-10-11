@@ -9,7 +9,6 @@ import {
   Clock3,
   EllipsisVertical,
   ExternalLink,
-  Filter,
   Grid2X2,
   LayoutList,
   MapPin,
@@ -21,11 +20,11 @@ import {
   X,
 } from 'lucide-react';
 
-type ProjectStatus = 'On Track' | 'Delayed' | 'Planning' | 'Critical';
 type Project = {
   name: string;
   location: string;
-  status: ProjectStatus;
+  startDate: string;
+  endDate: string;
   progress: number;
   issues: number;
   tests: number;
@@ -34,33 +33,29 @@ type Project = {
 };
 
 const projects: Project[] = [
-  { name: 'Skyline Financial Center', location: 'Downtown, Metro City', status: 'On Track', progress: 78, issues: 12, tests: 45, image: 'https://images.pexels.com/photos/14577907/pexels-photo-14577907.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
-  { name: 'Harbor View Data Center', location: 'Port District, North Cove', status: 'Delayed', progress: 42, issues: 24, tests: 88, image: 'https://images.pexels.com/photos/18740807/pexels-photo-18740807.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
-  { name: 'Greenfield Residential Phase II', location: 'East Hills Development', status: 'Planning', progress: 15, issues: 4, tests: 12, image: 'https://images.pexels.com/photos/11960186/pexels-photo-11960186.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
-  { name: 'Nexus Industrial Park', location: 'Tech Corridor, Zone 4', status: 'On Track', progress: 92, issues: 2, tests: 8, image: 'https://images.pexels.com/photos/5884385/pexels-photo-5884385.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
-  { name: 'Mercy General Hospital Wing', location: 'Central Healthcare Hub', status: 'Critical', progress: 89, issues: 18, tests: 34, image: 'https://images.pexels.com/photos/18328706/pexels-photo-18328706.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
-  { name: 'Summit Ridge Shopping Mall', location: 'Western Uplands', status: 'On Track', progress: 55, issues: 7, tests: 22, image: 'https://images.pexels.com/photos/1441009/pexels-photo-1441009.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
+  { name: 'Skyline Financial Center', location: 'Downtown, Metro City', startDate: '2025-01-15', endDate: '2026-03-30', progress: 78, issues: 12, tests: 45, image: 'https://images.pexels.com/photos/14577907/pexels-photo-14577907.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
+  { name: 'Harbor View Data Center', location: 'Port District, North Cove', startDate: '2025-03-01', endDate: '2026-09-15', progress: 42, issues: 24, tests: 88, image: 'https://images.pexels.com/photos/18740807/pexels-photo-18740807.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
+  { name: 'Greenfield Residential Phase II', location: 'East Hills Development', startDate: '2025-06-10', endDate: '2027-01-20', progress: 15, issues: 4, tests: 12, image: 'https://images.pexels.com/photos/11960186/pexels-photo-11960186.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
+  { name: 'Nexus Industrial Park', location: 'Tech Corridor, Zone 4', startDate: '2024-08-05', endDate: '2025-12-18', progress: 92, issues: 2, tests: 8, image: 'https://images.pexels.com/photos/5884385/pexels-photo-5884385.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
+  { name: 'Mercy General Hospital Wing', location: 'Central Healthcare Hub', startDate: '2024-11-20', endDate: '2026-02-28', progress: 89, issues: 18, tests: 34, image: 'https://images.pexels.com/photos/18328706/pexels-photo-18328706.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
+  { name: 'Summit Ridge Shopping Mall', location: 'Western Uplands', startDate: '2025-02-14', endDate: '2026-11-30', progress: 55, issues: 7, tests: 22, image: 'https://images.pexels.com/photos/1441009/pexels-photo-1441009.jpeg?auto=compress&cs=tinysrgb&h=650&w=940' },
 ];
 
 const archivedProjects: Project[] = [
-  { name: 'Old Town Renovation', location: 'Historic District', status: 'On Track', progress: 100, issues: 0, tests: 0, image: 'https://images.pexels.com/photos/1366944/pexels-photo-1366944.jpeg?auto=compress&cs=tinysrgb&h=650&w=940', archived: true },
-  { name: 'Bridge Expansion X-14', location: 'River Crossing', status: 'On Track', progress: 100, issues: 0, tests: 0, image: 'https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&h=650&w=940', archived: true },
-  { name: 'Solar Farm Alpha', location: 'Desert Edge', status: 'On Track', progress: 100, issues: 0, tests: 0, image: 'https://images.pexels.com/photos/433308/pexels-photo-433308.jpeg?auto=compress&cs=tinysrgb&h=650&w=940', archived: true },
+  { name: 'Old Town Renovation', location: 'Historic District', startDate: '2023-04-01', endDate: '2024-06-15', progress: 100, issues: 0, tests: 0, image: 'https://images.pexels.com/photos/1366944/pexels-photo-1366944.jpeg?auto=compress&cs=tinysrgb&h=650&w=940', archived: true },
+  { name: 'Bridge Expansion X-14', location: 'River Crossing', startDate: '2023-01-10', endDate: '2024-03-20', progress: 100, issues: 0, tests: 0, image: 'https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg?auto=compress&cs=tinysrgb&h=650&w=940', archived: true },
+  { name: 'Solar Farm Alpha', location: 'Desert Edge', startDate: '2022-09-05', endDate: '2023-12-30', progress: 100, issues: 0, tests: 0, image: 'https://images.pexels.com/photos/433308/pexels-photo-433308.jpeg?auto=compress&cs=tinysrgb&h=650&w=940', archived: true },
 ];
-
-const statusClass: Record<ProjectStatus, string> = { 'On Track': 'status-track', Delayed: 'status-delayed', Planning: 'status-planning', Critical: 'status-critical' };
 
 function ProjectCard({ project, onOpenDashboard }: { project: Project; onOpenDashboard: () => void }) {
   return (
     <article className={`project-card ${project.archived ? 'archived-card' : ''}`}>
       <div className="project-image-wrap">
         <img src={project.image} alt="" className="project-image" />
-        <span className={`project-status ${statusClass[project.status]}`}>{project.status}</span>
       </div>
       <div className="project-body">
         <div className="project-heading"><div><h3>{project.name}</h3><p><MapPin size={11} /> {project.location}</p></div><button className="icon-button" aria-label={`More options for ${project.name}`}><EllipsisVertical size={16} /></button></div>
-        <div className="project-label-row"><span>OVERALL COMPLETION</span><strong>{project.progress}%</strong></div>
-        <div className="progress-track"><span style={{ width: `${project.progress}%` }} /></div>
+        <div className="project-date-row"><div><small>START DATE</small><span>{project.startDate}</span></div><div><small>END DATE</small><span>{project.endDate}</span></div></div>
         <div className="metric-row">
           <div><small>OPEN ISSUES</small><span className={project.issues > 10 ? 'metric-danger' : 'metric-warning'}><CircleAlert size={12} /> {project.issues}</span></div>
           <div><small>TESTS PENDING</small><span className="metric-blue"><Clock3 size={12} /> {project.tests}</span></div>
@@ -73,14 +68,14 @@ function ProjectCard({ project, onOpenDashboard }: { project: Project; onOpenDas
 
 function Projects({ onSignOut, onOpenDashboard }: { onSignOut: () => void; onOpenDashboard: () => void }) {
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState<'All' | ProjectStatus>('All');
+
   const [showArchived, setShowArchived] = useState(true);
   const [gridView, setGridView] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
   const filteredProjects = useMemo(() => projects.filter((project) => {
     const matchesQuery = `${project.name} ${project.location}`.toLowerCase().includes(query.toLowerCase());
-    return matchesQuery && (status === 'All' || project.status === status);
-  }), [query, status]);
+    return matchesQuery;
+  }), [query]);
 
   return (
     <div className="app-frame">
@@ -95,7 +90,7 @@ function Projects({ onSignOut, onOpenDashboard }: { onSignOut: () => void; onOpe
           <div className="overview-card"><span className="overview-icon"><TrendingUp size={17} /></span><div><small>AVG. PROGRESS</small><strong>64%</strong><p>Ahead of schedule</p></div></div>
           <div className="overview-card"><span className="overview-icon"><Users size={17} /></span><div><small>PERSONNEL ONSITE</small><strong>245</strong><p>Across all sites</p></div></div>
         </section>
-        <section className="toolbar"><label className="project-search"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects by name, location, or manager..." />{query && <button onClick={() => setQuery('')} aria-label="Clear search"><X size={13} /></button>}</label><div className="toolbar-actions"><label className="select-control"><Filter size={13} /><select value={status} onChange={(event) => setStatus(event.target.value as 'All' | ProjectStatus)}><option value="All">Status: All</option><option value="On Track">On Track</option><option value="Delayed">Delayed</option><option value="Planning">Planning</option><option value="Critical">Critical</option></select><ChevronDown size={13} /></label><button className="sort-button"><Settings2 size={13} /> Sort: Newest <ChevronDown size={13} /></button><button className={`view-button ${gridView ? 'active' : ''}`} onClick={() => setGridView(true)} aria-label="Grid view"><Grid2X2 size={15} /></button><button className={`view-button ${!gridView ? 'active' : ''}`} onClick={() => setGridView(false)} aria-label="List view"><LayoutList size={15} /></button></div></section>
+        <section className="toolbar"><label className="project-search"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects by name, location, or manager..." />{query && <button onClick={() => setQuery('')} aria-label="Clear search"><X size={13} /></button>}</label><div className="toolbar-actions"><button className="sort-button"><Settings2 size={13} /> Sort: Newest <ChevronDown size={13} /></button><button className={`view-button ${gridView ? 'active' : ''}`} onClick={() => setGridView(true)} aria-label="Grid view"><Grid2X2 size={15} /></button><button className={`view-button ${!gridView ? 'active' : ''}`} onClick={() => setGridView(false)} aria-label="List view"><LayoutList size={15} /></button></div></section>
         <section className="project-section"><div className="section-heading"><div><h2>Active Projects <span>{filteredProjects.length}</span></h2><p>Ongoing construction and development projects currently in progress.</p></div></div><div className={`projects-grid ${gridView ? '' : 'list-view'}`}>{filteredProjects.map((project) => <ProjectCard key={project.name} project={project} onOpenDashboard={onOpenDashboard} />)}</div>{filteredProjects.length === 0 && <div className="empty-state">No projects match your search.</div>}</section>
         <button className="archive-toggle" onClick={() => setShowArchived(!showArchived)}><span />{showArchived ? 'Hide' : 'Show'} Archived Projects <span className="archive-count">3</span><ChevronDown size={13} className={showArchived ? 'rotated' : ''} /><span /></button>
         {showArchived && <section className="project-section archived-section"><div className="section-heading"><div><h2>Archived Projects <span>3</span></h2><p>Historical projects that have been completed or indefinitely paused.</p></div></div><div className="projects-grid">{archivedProjects.map((project) => <ProjectCard key={project.name} project={project} onOpenDashboard={onOpenDashboard} />)}</div></section>}
