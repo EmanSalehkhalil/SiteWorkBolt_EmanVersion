@@ -21,16 +21,16 @@ import {
 } from 'lucide-react';
 
 type ApiProject = {
-  project_id: string;
-  project_name: string;
-  is_archived: boolean;
-  start_date: string | null;
-  end_date: string | null;
-  project_image: string | null;
+  projectId: string;
+  projectName: string;
+  isArchived: boolean;
+  startDate: string | null;
+  endDate: string | null;
+  projectImage: string | null;
   city: string | null;
   country: string | null;
-  number_of_issues: number;
-  number_of_tests_pending: number;
+  numberOfIssues: number;
+  numberOfTestsPending: number;
 };
 
 type ApiResponse = {
@@ -112,15 +112,15 @@ function Projects({ onSignOut, onOpenDashboard }: { onSignOut: () => void; onOpe
         const json: ApiResponse = await res.json();
         if (cancelled) return;
         const mapped: Project[] = json.data.map((p) => ({
-          id: p.project_id,
-          name: p.project_name,
+          id: p.projectId,
+          name: p.projectName,
           location: buildLocation(p.city, p.country),
-          startDate: formatDate(p.start_date),
-          endDate: formatDate(p.end_date),
-          issues: p.number_of_issues,
-          tests: p.number_of_tests_pending,
-          image: p.project_image || FALLBACK_IMAGE,
-          archived: p.is_archived,
+          startDate: formatDate(p.startDate),
+          endDate: formatDate(p.endDate),
+          issues: p.numberOfIssues,
+          tests: p.numberOfTestsPending,
+          image: p.projectImage || FALLBACK_IMAGE,
+          archived: p.isArchived,
         }));
         setProjects(mapped);
         setTotalActive(mapped.filter((p) => !p.archived).length);
