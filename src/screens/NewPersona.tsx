@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { CalendarDays, ChevronDown, Mail, Phone, Plus, Upload, User, X } from 'lucide-react';
 import Personas from '@/screens/Personas';
+import type { MainNavigationTarget } from '@/navigation';
 
 const companies = ['Skyline Infra', 'BuildSafe Co', 'Volt Systems', 'Global Haul', 'Apex Mechanical', 'Vertex Civil'];
 const roles = ['Project Lead', 'Site Engineer', 'Safety Supervisor', 'Electrical Foreman', 'Logistics Mgr', 'QA Inspector', 'Commissioning Agent'];
 
-function NewPersona({ onBackToPersonas, onBackToProject, onSignOut }: { onBackToPersonas: () => void; onBackToProject: () => void; onSignOut: () => void }) {
+function NewPersona({ onBackToPersonas, onBackToProject, onNavigate, onSignOut }: { onBackToPersonas: () => void; onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
   const [fullName, setFullName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [company, setCompany] = useState('');
@@ -35,7 +36,7 @@ function NewPersona({ onBackToPersonas, onBackToProject, onSignOut }: { onBackTo
 
   return (
     <div className="new-persona-screen">
-      <Personas onBackToProject={onBackToProject} onSignOut={onSignOut} onOpenNewPersona={() => undefined} />
+      <Personas onBackToProject={onBackToProject} onNavigate={onNavigate} onSignOut={onSignOut} onOpenNewPersona={() => undefined} />
 
       <div className="new-persona-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onBackToPersonas(); }}>
         <section className="new-persona-dialog" role="dialog" aria-modal="true" aria-labelledby="new-persona-title">

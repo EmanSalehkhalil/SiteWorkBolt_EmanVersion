@@ -95,6 +95,7 @@ type NewProjectForm = {
   projectName: string;
   city: string;
   country: string;
+  segment: string;
   startDate: string;
   endDate: string;
   numberOfIssues: string;
@@ -106,6 +107,7 @@ const emptyForm: NewProjectForm = {
   projectName: '',
   city: '',
   country: '',
+  segment: '',
   startDate: '',
   endDate: '',
   numberOfIssues: '0',
@@ -175,6 +177,14 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
               <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} placeholder="Enter country" />
             </label>
           </div>
+          <label className="modal-field">
+            <span>Segment</span>
+            <select value={form.segment} onChange={(e) => setForm({ ...form, segment: e.target.value })} required>
+              <option value="" disabled>Select segment</option>
+              <option value="cloud and service provider">cloud and service provider</option>
+              <option value="multitech">multitech</option>
+            </select>
+          </label>
           <div className="modal-field-row">
             <label className="modal-field">
               <span>Start Date</span>
@@ -185,21 +195,12 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
               <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} required />
             </label>
           </div>
-          <div className="modal-field-row">
-            <label className="modal-field">
-              <span>Number of Issues</span>
-              <input type="number" min="0" value={form.numberOfIssues} onChange={(e) => setForm({ ...form, numberOfIssues: e.target.value })} />
-            </label>
-            <label className="modal-field">
-              <span>Tests Pending</span>
-              <input type="number" min="0" value={form.numberOfTestsPending} onChange={(e) => setForm({ ...form, numberOfTestsPending: e.target.value })} />
-            </label>
-          </div>
+          
           <div className="modal-field">
             <span>Project Image</span>
             <div className="image-mode-toggle">
               <button type="button" className={imageMode === 'link' ? 'active' : ''} onClick={() => setImageMode('link')}><Link2 size={13} /> Image URL</button>
-              <button type="button" className={imageMode === 'upload' ? 'active' : ''} onClick={() => setImageMode('upload')}><Upload size={13} /> Upload from Computer</button>
+              {/* <button type="button" className={imageMode === 'upload' ? 'active' : ''} onClick={() => setImageMode('upload')}><Upload size={13} /> Upload from Computer</button> */}
             </div>
             {imageMode === 'link' ? (
               <input value={form.projectImage} onChange={(e) => setForm({ ...form, projectImage: e.target.value })} placeholder="Paste image URL (https://...)" />
@@ -225,7 +226,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
   );
 }
 
-function Projects({ onSignOut, onOpenDashboard }: { onSignOut: () => void; onOpenDashboard: () => void }) {
+function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { onSignOut: () => void; onOpenDashboard: () => void; onOpenPortfolioDashboard: () => void }) {
   const [query, setQuery] = useState('');
   const [showArchived, setShowArchived] = useState(true);
   const [gridView, setGridView] = useState(true);
@@ -280,20 +281,24 @@ function Projects({ onSignOut, onOpenDashboard }: { onSignOut: () => void; onOpe
 
   async function handleCreateProject(form: NewProjectForm) {
     const res = await fetch('http://localhost:4000/projects/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        project_name: form.projectName,
-        city: form.city || null,
-        country: form.country || null,
-        start_date: form.startDate ? new Date(form.startDate).toISOString() : null,
-        end_date: form.endDate ? new Date(form.endDate).toISOString() : null,
-        number_of_issues: Number(form.numberOfIssues) || 0,
-        number_of_tests_pending: Number(form.numberOfTestsPending) || 0,
-        project_image: form.projectImage || null,
-        is_archived: false,
-      }),
-    });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    projectName: form.projectName,
+    city: form.city || null,
+    country: form.country || null,
+    segment: form.segment,
+    startDate: form.startDate
+      ? new Date(form.startDate).toISOString()
+      : null,
+    endDate: form.endDate
+      ? new Date(form.endDate).toISOString()
+      : null,
+    projectImage: form.projectImage || null
+  }),
+});
     if (!res.ok) throw new Error(`Failed to create project (${res.status})`);
     await fetchProjects();
   }
@@ -304,7 +309,7 @@ function Projects({ onSignOut, onOpenDashboard }: { onSignOut: () => void; onOpe
         <div className="topbar-inner"><div className="site-logo"><span className="logo-mark"><span /></span><strong>SiteSphere</strong></div><label className="global-search"><Search size={14} /><input placeholder="Search site data, logs, or reports..." /></label><div className="top-actions"><button className="bell-button" aria-label="Notifications"><Bell size={16} /><i /></button><span className="top-divider" /><button className="profile-button" onClick={() => setProfileOpen(!profileOpen)}><span><strong>Alex Construction</strong><small>Project Manager</small></span><span className="avatar">AC</span><ChevronDown size={13} /></button>{profileOpen && <div className="profile-menu"><strong>Alex Construction</strong><button>Account settings</button><button onClick={onSignOut}>Sign out</button></div>}</div></div>
       </header>
       <main className="content">
-        <div className="page-header"><div><h1>Projects Portfolio <span className="header-count">{totalActive}</span></h1><p>Welcome back, Alex. You have oversight of <b>{totalActive} active job sites</b> across the region.</p></div><div className="header-buttons"><button className="secondary-button"><Clock3 size={14} /> Recent History</button><button className="primary-button" onClick={() => setShowNewProject(true)}><Plus size={15} /> New Project</button></div></div>
+        <div className="page-header"><div><h1>Projects Portfolio <span className="header-count">{totalActive}</span></h1><p>Welcome back, Alex. You have oversight of <b>{totalActive} active job sites</b> across the region.</p></div><div className="header-buttons"><button className="secondary-button" onClick={onOpenPortfolioDashboard}><TrendingUp size={14} /> Portfolio Dashboard</button><button className="secondary-button"><Clock3 size={14} /> Recent History</button><button className="primary-button" onClick={() => setShowNewProject(true)}><Plus size={15} /> New Project</button></div></div>
         <section className="overview-grid">
           <div className="overview-card"><span className="overview-icon"><Building2 size={17} /></span><div><small>ACTIVE PROJECTS</small><strong>{totalActive}</strong><p><TrendingUp size={11} /> <b>+2</b> this month</p></div></div>
           <div className="overview-card"><span className="overview-icon"><CircleAlert size={17} /></span><div><small>OPEN ISSUES</small><strong>{String(totalIssues).padStart(2, '0')}</strong><p><TrendingUp size={11} /> Across all sites</p></div></div>

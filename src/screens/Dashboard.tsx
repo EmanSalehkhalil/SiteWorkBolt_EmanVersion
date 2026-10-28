@@ -1,12 +1,13 @@
 import { Activity, Bell, CircleCheck as CheckCircle2, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Search, Settings2, ShieldCheck, SlidersHorizontal, TestTube as TestTube2, Users, Wrench, Zap } from 'lucide-react';
+import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, active: true },
   { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert },
-  { label: 'Checklist Stats', icon: ClipboardCheck },
+  // { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban },
-  { label: 'Testing Workflow', icon: TestTube2 },
+  // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
   { label: 'Personas', icon: Users },
@@ -20,14 +21,14 @@ const issueCards = [
   { label: 'SAFETY ISSUES (HSE)', total: '5', resolved: '1', rate: '20.0%', change: '+1', color: 'green' },
 ];
 
-function Dashboard({ onBackToProjects, onOpenChecklist, onOpenCompanyChecklists, onOpenIssues, onOpenReports, onOpenTesting, onOpenSubmittals, onOpenMilestones, onOpenPersonas, onOpenAssets, onOpenChangeLog, onSignOut }: { onBackToProjects: () => void; onOpenChecklist: () => void; onOpenCompanyChecklists: () => void; onOpenIssues: () => void; onOpenReports: () => void; onOpenTesting: () => void; onOpenSubmittals: () => void; onOpenMilestones: () => void; onOpenPersonas: () => void; onOpenAssets: () => void; onOpenChangeLog: () => void; onSignOut: () => void }) {
+function Dashboard({ onBackToProjects, onNavigate, onSignOut }: { onBackToProjects: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
   return (
     <div className="project-dashboard-screen">
       <aside className="project-dashboard-sidebar">
         <button className="project-dashboard-brand" onClick={onBackToProjects}><span className="project-dashboard-mark"><span /></span><strong>SiteSphere</strong></button>
         <div className="project-sidebar-label">MAIN NAVIGATION</div>
         <nav className="project-dashboard-nav">
-          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Issues' ? onOpenIssues : label === 'Checklist Stats' ? onOpenChecklist : label === 'Company Checklists' ? onOpenCompanyChecklists : label === 'Testing Workflow' ? onOpenTesting : label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : label === 'Milestones' ? onOpenMilestones : label === 'Personas' ? onOpenPersonas : label === 'Assets & Equipment' ? onOpenAssets : label === 'Change Log' ? onOpenChangeLog : undefined}><Icon size={16} /><span>{label}</span></button>)}
+          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={() => onNavigate(getMainNavigationTarget(label))}><Icon size={16} /><span>{label}</span></button>)}
         </nav>
         <div className="project-sidebar-bottom"><button><Settings2 size={16} /> Switch Project</button><button className="project-signout" onClick={onSignOut}><LogOut size={16} /> Sign Out</button></div>
       </aside>

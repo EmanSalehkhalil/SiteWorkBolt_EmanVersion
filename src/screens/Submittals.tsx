@@ -1,28 +1,33 @@
 import { useMemo, useState } from 'react';
 import { Bell, Check, ChevronDown, CircleAlert, Download, FileCheck2, FileText, FolderKanban, History, LayoutDashboard, Link2, LogOut, Menu, MoveVertical as MoreVertical, Search, Settings2, ShieldCheck, TestTube as TestTube2, Upload, Users, Wrench, X } from 'lucide-react';
+import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type SubmittalStatus = 'Approved' | 'Pending Review' | 'Active' | 'Inactive';
 type Submittal = { id: string; title: string; group: string; status: SubmittalStatus; version: string; submittedBy?: string; date?: string; equipment?: string; };
 
 const submittals: Submittal[] = [
   { id: 'SUB-HSE-001', title: 'HSE Management Plan (General)', group: 'HSE & Safety Plans', status: 'Approved', version: 'v2.4', submittedBy: 'John Smith', date: 'Oct 12, 2023' },
-  { id: 'SUB-RAMS-004', title: 'LV Switchgear Installation RAMS', group: 'RAMS (Risk Assessment)', status: 'Pending Review', version: 'v1.2', equipment: 'SWG-01-A' },
-  { id: 'SUB-RAMS-005', title: 'Generator Commissioning RAMS', group: 'RAMS (Risk Assessment)', status: 'Approved', version: 'v3.0', equipment: 'GEN-02-B' },
+  { id: 'SUB-RAMS-004', title: 'LV Switchgear Installation RAMS', group:  'Risk Assessments & Method Statements (RAMS)', status: 'Pending Review', version: 'v1.2', equipment: 'SWG-01-A' },
+  { id: 'SUB-RAMS-005', title: 'Generator Commissioning RAMS', group:  'Risk Assessments & Method Statements (RAMS)', status: 'Approved', version: 'v3.0', equipment: 'GEN-02-B' },
+  { id: 'SUB-ITP-001', title: 'MV Switchgear Inspection Test Plan', group: 'Inspection Test Plan (ITP)', status: 'Pending Review', version: 'v1.0', equipment: 'SWG-01-A' },
   { id: 'SUB-PERMIT-001', title: 'Hot Work Permit - Sector 4', group: 'Permits & Certificates', status: 'Active', version: 'P-2023-991', equipment: 'Welding Station A4' },
   { id: 'SUB-PERMIT-002', title: 'Excavation Permit - B1', group: 'Permits & Certificates', status: 'Inactive', version: 'P-2023-842', equipment: 'CAT 320 Excavator' },
 ];
 
-const groups = ['HSE & Safety Plans', 'RAMS (Risk Assessment)', 'Permits & Certificates'];
+const groups = ['HSE & Safety Plans', 'Risk Assessments & Method Statements (RAMS)', 'Inspection Test Plan (ITP)', 'Permits & Certificates'];
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Submittals', icon: FileText, active: true },
-  { label: 'Issues', icon: CircleAlert }, { label: 'Checklist Stats', icon: FileCheck2 }, { label: 'Company Checklists', icon: FolderKanban },
-  { label: 'Testing Workflow', icon: TestTube2 }, { label: 'Milestones', icon: ShieldCheck }, { label: 'Reports', icon: FileText },
+  { label: 'Issues', icon: CircleAlert }, 
+  // { label: 'Checklist Stats', icon: FileCheck2 }, 
+  { label: 'Company Checklists', icon: FolderKanban },
+  // { label: 'Testing Workflow', icon: TestTube2 },
+   { label: 'Milestones', icon: ShieldCheck }, { label: 'Reports', icon: FileText },
   { label: 'Personas', icon: Users }, { label: 'Assets & Equipment', icon: Wrench }, { label: 'Change Log', icon: History },
 ];
 
 function statusClass(status: SubmittalStatus): string { return `submittal-status submittal-${status.toLowerCase().replace(' ', '-')}`; }
 
-function Submittals({ onBackToProject, onSignOut }: { onBackToProject: () => void; onSignOut: () => void }) {
+function Submittals({ onBackToProject, onNavigate, onSignOut }: { onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
   const [query, setQuery] = useState('');
   const [type, setType] = useState('All Types');
   const [status, setStatus] = useState('All Statuses');
@@ -43,7 +48,7 @@ function Submittals({ onBackToProject, onSignOut }: { onBackToProject: () => voi
     <aside className="submittals-sidebar">
       <button className="submittals-brand" onClick={onBackToProject}><span className="submittals-mark"><span /></span><strong>SiteSphere</strong></button>
       <div className="submittals-sidebar-label">MAIN NAVIGATION</div>
-      <nav className="submittals-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label}><Icon size={15} /><span>{label}</span></button>)}</nav>
+      <nav className="submittals-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={() => onNavigate(getMainNavigationTarget(label))}><Icon size={15} /><span>{label}</span></button>)}</nav>
       <div className="submittals-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Settings</button><button onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
     </aside>
     <div className="submittals-main">
@@ -51,7 +56,7 @@ function Submittals({ onBackToProject, onSignOut }: { onBackToProject: () => voi
       <main className="submittals-content">
         <div className="submittals-heading"><div><h1>Project Submittals</h1><p>Manage and track technical documentation, safety plans, and equipment permits.</p></div><div className="submittals-heading-actions"><button onClick={() => showNotice('Preparing batch download')}><Download size={13} /> Batch Download</button><button className="submittals-primary" onClick={() => showNotice('New submittal form is ready')}><PlusIcon /> New Submittal</button></div></div>
         <section className="submittals-filter-card"><div><label>TYPE<select value={type} onChange={(event) => setType(event.target.value)}><option>All Types</option>{groups.map((group) => <option key={group}>{group}</option>)}</select></label><label>STATUS<select value={status} onChange={(event) => setStatus(event.target.value)}><option>All Statuses</option><option>Approved</option><option>Pending Review</option><option>Active</option><option>Inactive</option></select></label><label>ASSIGNED TO<select><option>All Users</option></select></label><label>EQUIPMENT<select><option>All Equipment</option></select></label><label>DISCIPLINE<select><option>All Disciplines</option></select></label></div><label className="submittals-phase-filter">PHASE<select><option>All Phases</option><option>Level 1: Factory Acceptance</option><option>Level 2: Field Component</option></select></label><button aria-label="Apply filters" onClick={() => showNotice(`${filtered.length} submittals found`)}><Settings2 size={14} /></button></section>
-        {groups.map((group) => { const items = filtered.filter((item) => item.group === group); if (!items.length) return null; return <section className="submittal-group" key={group}><div className="submittal-group-heading"><div><span className={`submittal-group-icon group-${group.startsWith('HSE') ? 'hse' : group.startsWith('RAMS') ? 'rams' : 'permit'}`}><FileText size={15} /></span><h2>{group}</h2></div><span>{items.length} Record{items.length > 1 ? 's' : ''}</span></div>{group === 'Permits & Certificates' ? <div className="permit-grid">{items.map((item) => <PermitCard item={item} key={item.id} onSelect={() => setSelectedId(item.id)} />)}</div> : items.map((item) => <SubmittalRow item={item} key={item.id} selected={item.id === selectedId} onSelect={() => setSelectedId(item.id)} onAction={showNotice} />)}</section>; })}
+        {groups.map((group) => { const items = filtered.filter((item) => item.group === group); if (!items.length) return null; const iconTone = group === 'HSE & Safety Plans' ? 'hse' : group.includes('(RAMS)') ? 'rams' : group.includes('(ITP)') ? 'itp' : 'permit'; return <section className="submittal-group" key={group}><div className="submittal-group-heading"><div><span className={`submittal-group-icon group-${iconTone}`}><FileText size={15} /></span><h2>{group}</h2></div><span>{items.length} Record{items.length > 1 ? 's' : ''}</span></div>{group === 'Permits & Certificates' ? <div className="permit-grid">{items.map((item) => <PermitCard item={item} key={item.id} onSelect={() => setSelectedId(item.id)} />)}</div> : items.map((item) => <SubmittalRow item={item} key={item.id} selected={item.id === selectedId} onSelect={() => setSelectedId(item.id)} onAction={showNotice} />)}</section>; })}
         {!filtered.length && <div className="submittals-empty"><FileText size={24} /><strong>No submittals match these filters</strong><span>Try clearing a filter or searching for another document.</span></div>}
         <section className="drawings-section"><div className="submittal-group-heading"><div><span className="submittal-group-icon group-drawing"><FileCheck2 size={15} /></span><h2>Technical Drawings</h2></div><span>3 Records</span></div><div className="drawing-grid"><DrawingCard title="HV Single Line Diagram" label="Rev C" tone="dark" /><DrawingCard title="Switchgear Layout B-B" label="Rev 2" tone="paper" /><DrawingCard title="Earthing Grid Detail" label="Rev A" tone="blue" /></div></section>
       </main>

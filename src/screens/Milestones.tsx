@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Bell, CalendarDays, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
+import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type MilestoneStatus = 'Done' | 'In Progress' | 'At Risk' | 'Not Started';
 
@@ -55,10 +56,11 @@ const phases: Phase[] = [
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
+  { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: Flag },
-  { label: 'Checklist Stats', icon: FileText },
+  // { label: 'Checklist Stats', icon: FileText },
   { label: 'Company Checklists', icon: FolderKanban },
-  { label: 'Testing Workflow', icon: TestTube2 },
+  // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag, active: true },
   { label: 'Reports', icon: FileText },
   { label: 'Personas', icon: Users },
@@ -66,7 +68,7 @@ const navItems = [
   { label: 'Change Log', icon: History },
 ];
 
-function Milestones({ onBackToProject, onSignOut, onOpenNewMilestone }: { onBackToProject: () => void; onSignOut: () => void; onOpenNewMilestone: () => void }) {
+function Milestones({ onBackToProject, onNavigate, onSignOut, onOpenNewMilestone }: { onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void; onOpenNewMilestone: () => void }) {
   const [query, setQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [showConfiguration, setShowConfiguration] = useState(false);
@@ -100,7 +102,7 @@ function Milestones({ onBackToProject, onSignOut, onOpenNewMilestone }: { onBack
         <button className="milestones-brand" onClick={onBackToProject}><span className="milestones-mark"><span /></span><strong>SiteSphere</strong></button>
         <div className="milestones-sidebar-label">MAIN NAVIGATION</div>
         <nav className="milestones-nav">
-          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Dashboard' ? onBackToProject : undefined}><Icon size={15} /><span>{label}</span></button>)}
+          {navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={() => onNavigate(getMainNavigationTarget(label))}><Icon size={15} /><span>{label}</span></button>)}
         </nav>
         <div className="milestones-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button className="milestones-signout" onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
       </aside>
@@ -130,4 +132,3 @@ function Milestones({ onBackToProject, onSignOut, onOpenNewMilestone }: { onBack
 }
 
 export default Milestones;
-

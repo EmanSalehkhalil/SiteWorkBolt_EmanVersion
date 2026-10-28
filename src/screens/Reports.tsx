@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Activity, Bell, CalendarDays, Check, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, FileText, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Printer, Search, Settings2, Share2, SlidersHorizontal, TestTube as TestTube2, TrendingUp, Users, Wrench, X } from 'lucide-react';
+import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type ReportRow = { id: string; subject: string; company: string; priority: 'High' | 'Critical' | 'Medium' | 'Low'; status: string; date: string };
 
 const reportTypes = ['Checklist Progress', 'Test Performance', 'Issue Trends', 'Equipment Usage', 'Milestone Status'];
 const phases = ['Level 1: Factory Acceptance', 'Level 2: Field Component', 'Level 3: Terminal Testing', 'Level 4: Functional Performance', 'Level 5: Integrated Systems'];
-const companies = ['Schneider Electric', 'Vertiv', 'ABB', 'Siemens'];
+const equipments = ['HVAC Sensors', 'Main Switchgear', 'Secondary Containment', 'L3 Network Racks'];
 const rows: ReportRow[] = [
   { id: 'ISS-4012', subject: 'HVAC Sensor Calibration', company: 'Schneider', priority: 'High', status: 'Under Correction', date: '2024-11-10' },
   { id: 'ISS-3988', subject: 'Main Switchgear Busbar Alignment', company: 'ABB', priority: 'Critical', status: 'Open', date: '2024-11-08' },
@@ -18,9 +19,9 @@ const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert },
-  { label: 'Checklist Stats', icon: ClipboardCheck },
+  // { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban },
-  { label: 'Testing Workflow', icon: TestTube2 },
+  // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart, active: true },
   { label: 'Personas', icon: Users },
@@ -28,10 +29,10 @@ const navItems = [
   { label: 'Change Log', icon: History },
 ];
 
-function Reports({ onBackToProject, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {
+function Reports({ onBackToProject, onNavigate, onSignOut }: { onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
   const [selectedType, setSelectedType] = useState('Issue Trends');
   const [selectedPhases, setSelectedPhases] = useState<string[]>([phases[3], phases[4]]);
-  const [selectedCompanies, setSelectedCompanies] = useState(companies);
+  const [selectedEquipments, setSelectedEquipments] = useState(equipments);
   const [query, setQuery] = useState('');
   const [applied, setApplied] = useState(false);
 
@@ -46,7 +47,7 @@ function Reports({ onBackToProject, onOpenSubmittals, onSignOut }: { onBackToPro
       <aside className="reports-sidebar">
         <button className="reports-brand" onClick={onBackToProject}><span className="reports-brand-mark"><span /></span><strong>SiteSphere</strong><ChevronRight size={14} /></button>
         <div className="reports-sidebar-label">MAIN NAVIGATION</div>
-        <nav className="reports-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Submittals' ? onOpenSubmittals : undefined}><Icon size={15} /><span>{label}</span></button>)}</nav>
+        <nav className="reports-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={() => onNavigate(getMainNavigationTarget(label))}><Icon size={15} /><span>{label}</span></button>)}</nav>
         <div className="reports-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={15} /> Switch Project</button><button className="reports-signout" onClick={onSignOut}><LogOut size={15} /> Sign Out</button></div>
       </aside>
 
@@ -56,7 +57,7 @@ function Reports({ onBackToProject, onOpenSubmittals, onSignOut }: { onBackToPro
           <fieldset className="reports-config-group"><legend>REPORT TYPE</legend>{reportTypes.map((type) => <button className={selectedType === type ? 'selected' : ''} key={type} onClick={() => setSelectedType(type)}>{type === 'Issue Trends' ? <CircleAlert size={13} /> : type === 'Test Performance' ? <Activity size={13} /> : type === 'Checklist Progress' ? <Check size={13} /> : type === 'Equipment Usage' ? <FolderKanban size={13} /> : <Flag size={13} />}{type}</button>)}</fieldset>
           <fieldset className="reports-config-group"><legend>TIME PERIOD</legend><label className="reports-date-input"><CalendarDays size={13} /><input type="text" value="Oct 01, 2024" readOnly /></label><label className="reports-date-input"><CalendarDays size={13} /><input type="text" value="Nov 15, 2024" readOnly /></label></fieldset>
           <fieldset className="reports-config-group"><legend>PROJECT PHASES</legend>{phases.map((phase) => <label className="reports-check-row" key={phase}><input type="checkbox" checked={selectedPhases.includes(phase)} onChange={() => toggleValue(phase, selectedPhases, setSelectedPhases)} /><span><Check size={10} /></span>{phase}</label>)}</fieldset>
-          <fieldset className="reports-config-group"><legend>INVOLVED COMPANIES</legend>{companies.map((company) => <label className="reports-check-row" key={company}><input type="checkbox" checked={selectedCompanies.includes(company)} onChange={() => toggleValue(company, selectedCompanies, setSelectedCompanies)} /><span><Check size={10} /></span>{company}</label>)}</fieldset>
+          <fieldset className="reports-config-group"><legend>INVOLVED EQUIPMENTS</legend>{equipments.map((company) => <label className="reports-check-row" key={company}><input type="checkbox" checked={selectedEquipments.includes(company)} onChange={() => toggleValue(company, selectedEquipments, setSelectedEquipments)} /><span><Check size={10} /></span>{company}</label>)}</fieldset>
         </div>
         <button className={`reports-apply ${applied ? 'applied' : ''}`} onClick={() => setApplied(true)}>{applied ? <><Check size={14} /> Parameters Applied</> : <><Activity size={14} /> Apply Parameters</>}</button>
       </aside>

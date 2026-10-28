@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, RefreshCw, Search, Settings2, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
+import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type Phase = { level: string; title: string; status: string; active?: boolean; complete?: boolean };
 type Task = { text: string; meta: string; result: 'PASSED' | 'FAILED' | 'N/A'; issue?: boolean };
@@ -13,24 +14,58 @@ const phases: Phase[] = [
 ];
 
 const deliveryTasks: Task[] = [
-  { text: 'Verify shipping manifest and Bill of Lading match actual delivery items.', meta: '1 updates   0 comments   2 files', result: 'PASSED' },
-  { text: 'Inspect equipment for any transit damage, surface scratches, or dents.', meta: '4 updates   2 comments   8 files', result: 'PASSED' },
-  { text: 'Confirm all technical manuals, spare fuses, and keys are included.', meta: '0 updates   1 comments   1 files', result: 'N/A' },
+  {
+    text: '2.1 Equipment ratings match referenced design drawings and specification requirements.',
+    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
+    result: 'PASSED'
+  },
+  {
+    text: '2.2 Confirm there is no visual damage to equipment enclosure.',
+    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
+    result: 'PASSED'
+  },
+  {
+    text: '2.3 Confirm there is no sign of water inside the enclosure and no visible rust.',
+    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
+    result: 'PASSED'
+  },
+  {
+    text: "2.4 Confirm the accessories listed in the manufacturer's submittal have been delivered as specified.",
+    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
+    result: 'PASSED'
+  }
 ];
 
 const installationTasks: Task[] = [
-  { text: 'Verify physical integrity and nameplate data matches design specifications.', meta: '2 updates   1 comments   3 files', result: 'PASSED' },
-  { text: 'Check mounting bolt torque and leveling as per manufacturer guidelines.', meta: '3 updates   0 comments   1 files', result: 'PASSED' },
-  { text: 'Confirm proper clearance around the breaker as per NEC/IEC requirements.', meta: '1 updates   4 comments   2 files', result: 'FAILED', issue: true },
+  {
+    text: 'Pre-requisite Checks :: Confirm all factory defects and shortages fixed and complete',
+    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
+    result: 'N/A'
+  },
+  {
+    text: 'Associated Documentation :: SCCS (Short Circuit and Coordination Study) Revision Date',
+    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
+    result:'PASSED'
+  },
+  {
+    text: 'Visual Inspection :: Confirm name plate data matches one-line drawings',
+    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
+    result:'FAILED'
+  },
+  {
+    text: 'Visual Inspection :: Confirm the equipment is mounted in its final location per the shop drawings and instructions.',
+    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
+    result: 'N/A'
+  }
 ];
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
   { label: 'Issues', icon: CircleAlert },
-  { label: 'Checklist Stats', icon: ClipboardCheck },
+  // { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Company Checklists', icon: FolderKanban, active: true },
-  { label: 'Testing Workflow', icon: TestTube2 },
+  // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
   { label: 'Personas', icon: Users },
@@ -46,7 +81,7 @@ function TaskRow({ task }: { task: Task }) {
   return <div className="company-task-row"><div><strong>{task.text}</strong><small><RefreshCw size={10} /> {task.meta.split('   ')[0]} <MessageSquare size={10} /> {task.meta.split('   ')[1]} <Paperclip size={10} /> {task.meta.split('   ')[2]}</small>{task.issue && <em className="linked-issue"><CircleAlert size={10} /> 1 linked issue</em>}</div><ResultButtons task={task} /></div>;
 }
 
-function CompanyChecklists({ onBackToProject, onOpenReports, onOpenSubmittals, onSignOut }: { onBackToProject: () => void; onOpenReports: () => void; onOpenSubmittals: () => void; onSignOut: () => void }) {
+function CompanyChecklists({ onBackToProject, onNavigate, onSignOut }: { onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
   const [selectedPhase, setSelectedPhase] = useState('L2');
   const [expanded, setExpanded] = useState(true);
 
@@ -54,7 +89,7 @@ function CompanyChecklists({ onBackToProject, onOpenReports, onOpenSubmittals, o
     <aside className="company-checklist-sidebar">
       <button className="company-checklist-brand" onClick={onBackToProject}><span className="company-checklist-mark"><span /></span><strong>SiteSphere</strong></button>
       <div className="company-sidebar-label">MAIN NAVIGATION</div>
-      <nav className="company-checklist-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={label === 'Reports' ? onOpenReports : label === 'Submittals' ? onOpenSubmittals : undefined}><Icon size={16} /><span>{label}</span></button>)}</nav>
+      <nav className="company-checklist-nav">{navItems.map(({ label, icon: Icon, active }) => <button className={active ? 'active' : ''} key={label} onClick={() => onNavigate(getMainNavigationTarget(label))}><Icon size={16} /><span>{label}</span></button>)}</nav>
       <div className="company-sidebar-bottom"><button onClick={onBackToProject}><Settings2 size={16} /> Switch Project</button><button onClick={onSignOut}><LogOut size={16} /> Sign Out</button></div>
     </aside>
 
@@ -71,7 +106,7 @@ function CompanyChecklists({ onBackToProject, onOpenReports, onOpenSubmittals, o
         <nav className="company-phase-tabs">{phases.map((phase) => <button className={`${phase.active ? 'active' : ''} ${phase.complete ? 'complete' : ''}`} key={phase.level} onClick={() => setSelectedPhase(phase.level)}><span>{phase.level} <em>{phase.status}</em></span><strong>{phase.title}</strong></button>)}</nav>
 
         <div className="company-equipment-heading"><div><h2>Equipment List for {selectedPhase} <span>1</span></h2></div><button onClick={() => setExpanded(!expanded)}>{expanded ? 'Collapse products' : 'Expand products'} <ChevronDown size={13} /></button></div>
-        {expanded && <section className="equipment-card"><div className="equipment-header"><div><h3>MasterPact MTZ2 Air Circuit Breaker <span>Main Distribution</span></h3><p>High voltage circuit breaker for main distribution switchgear. SN: SE-ACB-901-22</p></div><div className="equipment-progress"><small>AVAILABLE IN: <b>L1</b> <b>L2</b> <b>L3</b></small><span><i /><strong>1/3 Completed</strong><ChevronDown size={12} /></span></div></div><div className="checklist-group"><div className="checklist-group-heading"><Wrench size={14} /><div><strong>DELIVERY</strong><small>Verify equipment arrival and physical condition</small></div><ChevronDown size={13} /></div>{deliveryTasks.map((task) => <TaskRow key={task.text} task={task} />)}</div><div className="checklist-group"><div className="checklist-group-heading"><ClipboardCheck size={14} /><div><strong>INSTALLATION / VERIFICATION</strong><small>Confirm proper positioning and structural mounting</small></div><ChevronDown size={13} /></div>{installationTasks.map((task) => <TaskRow key={task.text} task={task} />)}<button className="secondary-support"><span /> TBD: Secondary Support Verification <ChevronDown size={12} /></button></div><button className="add-inspection"><span>+</span> Add Custom Inspection Point</button></section>}
+        {expanded && <section className="equipment-card"><div className="equipment-header"><div><h3>LV Switchgear<span>Main Distribution</span></h3><p>Low voltage circuit breaker for main distribution switchgear. SN: SE-ACB-901-22</p></div><div className="equipment-progress"><small>AVAILABLE IN: <b>L1</b> <b>L2</b> <b>L3</b></small><span><i /><strong>1/3 Completed</strong><ChevronDown size={12} /></span></div></div><div className="checklist-group"><div className="checklist-group-heading"><Wrench size={14} /><div><strong>DELIVERY</strong><small>Verify equipment arrival and physical condition</small></div><ChevronDown size={13} /></div>{deliveryTasks.map((task) => <TaskRow key={task.text} task={task} />)}</div><div className="checklist-group"><div className="checklist-group-heading"><ClipboardCheck size={14} /><div><strong>INSTALLATION / VERIFICATION</strong><small>Confirm proper positioning and structural mounting</small></div><ChevronDown size={13} /></div>{installationTasks.map((task) => <TaskRow key={task.text} task={task} />)}<button className="secondary-support"><span /> TBD: Secondary Support Verification <ChevronDown size={12} /></button></div><button className="add-inspection"><span>+</span> Add Custom Inspection Point</button></section>}
       </main>
       <footer className="company-checklist-footer"><span>© 2024 SiteSphere Construction Systems. All rights reserved.</span><div><a>Documentation</a><a>Support</a><a>Privacy Policy</a></div></footer>
     </div>

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { CalendarDays, ChevronDown, Plus, X } from 'lucide-react';
 import Milestones from '@/screens/Milestones';
+import type { MainNavigationTarget } from '@/navigation';
 
 const initialChecklists = ['Schneider Galaxy V', 'Liebert EXL S1', 'ATS Series 7000'];
 
-function NewMilestone({ onBackToMilestones, onBackToProject, onSignOut }: { onBackToMilestones: () => void; onBackToProject: () => void; onSignOut: () => void }) {
+function NewMilestone({ onBackToMilestones, onBackToProject, onNavigate, onSignOut }: { onBackToMilestones: () => void; onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
   const [title, setTitle] = useState('');
   const [phase, setPhase] = useState('');
   const [owner, setOwner] = useState('');
@@ -18,7 +19,7 @@ function NewMilestone({ onBackToMilestones, onBackToProject, onSignOut }: { onBa
 
   return (
     <div className="new-milestone-screen">
-      <Milestones onBackToProject={onBackToProject} onSignOut={onSignOut} onOpenNewMilestone={() => undefined} />
+      <Milestones onBackToProject={onBackToProject} onNavigate={onNavigate} onSignOut={onSignOut} onOpenNewMilestone={() => undefined} />
       <div className="new-milestone-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onBackToMilestones(); }}>
         <section className="new-milestone-dialog" role="dialog" aria-modal="true" aria-labelledby="new-milestone-title">
           <div className="new-milestone-dialog-heading"><div><h2 id="new-milestone-title">New Project Milestone</h2><p>Map new milestones to construction phases and define<br />requirements.</p></div><button onClick={onBackToMilestones} aria-label="Close dialog"><X size={15} /></button></div>
