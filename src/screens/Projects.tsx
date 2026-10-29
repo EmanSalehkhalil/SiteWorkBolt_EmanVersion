@@ -1,27 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Bell,
-  Building2,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  CircleAlert,
-  Clock3,
-  EllipsisVertical,
-  ExternalLink,
-  Grid2X2,
-  ImagePlus,
-  LayoutList,
-  Link2,
-  MapPin,
-  Plus,
-  Search,
-  Settings2,
-  TrendingUp,
-  Upload,
-  Users,
-  X,
-} from 'lucide-react';
+import { Bell, Building2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Clock3, EllipsisVertical, ExternalLink, Grid2x2X as Grid2X2, ImagePlus, LayoutList, Link2, MapPin, Plus, Search, Settings2, TrendingUp, Upload, Users, X } from 'lucide-react';
 
 type ApiProject = {
   projectId: string;
@@ -98,6 +76,13 @@ type NewProjectForm = {
   segment: string;
   startDate: string;
   endDate: string;
+  networkNumber: string;
+  opportunityNumber: string;
+  siteManager: string;
+  qualityManager: string;
+  commissioningTeam: string;
+  workingDaysPerWeek: string;
+  workingHoursPerDay: string;
   numberOfIssues: string;
   numberOfTestsPending: string;
   projectImage: string;
@@ -110,6 +95,13 @@ const emptyForm: NewProjectForm = {
   segment: '',
   startDate: '',
   endDate: '',
+  networkNumber: '',
+  opportunityNumber: '',
+  siteManager: '',
+  qualityManager: '',
+  commissioningTeam: '',
+  workingDaysPerWeek: '',
+  workingHoursPerDay: '',
   numberOfIssues: '0',
   numberOfTestsPending: '0',
   projectImage: '',
@@ -196,6 +188,52 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
             </label>
           </div>
           
+          <div className="modal-field-row">
+            <label className="modal-field">
+              <span>Network Number</span>
+              <input value={form.networkNumber} onChange={(e) => setForm({ ...form, networkNumber: e.target.value })} placeholder="Enter network number" />
+            </label>
+            <label className="modal-field">
+              <span>Opportunity Number</span>
+              <input value={form.opportunityNumber} onChange={(e) => setForm({ ...form, opportunityNumber: e.target.value })} placeholder="Enter opportunity number" />
+            </label>
+          </div>
+          <div className="modal-field-row">
+            <label className="modal-field">
+              <span>Site Manager</span>
+              <input value={form.siteManager} onChange={(e) => setForm({ ...form, siteManager: e.target.value })} placeholder="Enter site manager" />
+            </label>
+            <label className="modal-field">
+              <span>Quality Manager</span>
+              <input value={form.qualityManager} onChange={(e) => setForm({ ...form, qualityManager: e.target.value })} placeholder="Enter quality manager" />
+            </label>
+          </div>
+          <label className="modal-field">
+            <span>Commissioning Team</span>
+            <input value={form.commissioningTeam} onChange={(e) => setForm({ ...form, commissioningTeam: e.target.value })} placeholder="Add commissioning team members" />
+            <small className="modal-field-hint">Multiple commissioning team members can be assigned to the same project.</small>
+          </label>
+          <div className="modal-field">
+            <span>Project Working Schedule</span>
+            <div className="modal-field-row">
+              <label className="modal-field">
+                <span>Working days per week</span>
+                <select value={form.workingDaysPerWeek} onChange={(e) => setForm({ ...form, workingDaysPerWeek: e.target.value })}>
+                  <option value="">Select days</option>
+                  <option value="5">5 days</option>
+                  <option value="6">6 days</option>
+                </select>
+              </label>
+              <label className="modal-field">
+                <span>Working hours per day</span>
+                <select value={form.workingHoursPerDay} onChange={(e) => setForm({ ...form, workingHoursPerDay: e.target.value })}>
+                  <option value="">Select hours</option>
+                  <option value="8">8 hours</option>
+                  <option value="10">10 hours</option>
+                </select>
+              </label>
+            </div>
+          </div>
           <div className="modal-field">
             <span>Project Image</span>
             <div className="image-mode-toggle">
