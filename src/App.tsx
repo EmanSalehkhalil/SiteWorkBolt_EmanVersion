@@ -13,12 +13,11 @@ import Submittals from '@/screens/Submittals';
 import Milestones from '@/screens/Milestones';
 import NewMilestone from '@/screens/NewMilestone';
 import Personas from '@/screens/Personas';
-import NewPersona from '@/screens/NewPersona';
 import AssetsEquip from '@/screens/AssetsEquip';
 import ChangeLog from '@/screens/ChangeLog';
 import type { MainNavigationTarget } from '@/navigation';
 
-type Screen = 'signin' | 'projects' | 'portfolio' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'new-persona' | 'assets' | 'milestones' | 'new-milestone' | 'changelog';
+type Screen = 'signin' | 'projects' | 'portfolio' | 'dashboard' | 'checklist' | 'company' | 'issues' | 'new-issue' | 'reports' | 'testing' | 'submittals' | 'personas' | 'assets' | 'milestones' | 'new-milestone' | 'changelog';
 
 function App() {
   const [screen, setScreen] = useState<Screen>('signin');
@@ -52,10 +51,7 @@ function App() {
     return <Testing onBackToProject={() => setScreen('dashboard')} onNavigate={navigateMain} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'personas') {
-    return <Personas onBackToProject={() => setScreen('dashboard')} onNavigate={navigateMain} onSignOut={() => setScreen('signin')} onOpenNewPersona={() => setScreen('new-persona')} />;
-  }
-  if (screen === 'new-persona') {
-    return <NewPersona onBackToPersonas={() => setScreen('personas')} onBackToProject={() => setScreen('dashboard')} onNavigate={navigateMain} onSignOut={() => setScreen('signin')} />;
+    return <Personas onBackToProject={() => setScreen('dashboard')} onNavigate={navigateMain} onSignOut={() => setScreen('signin')} />;
   }
   if (screen === 'assets') {
     return <AssetsEquip onBackToProject={() => setScreen('dashboard')} onSignOut={() => setScreen('signin')} />;
