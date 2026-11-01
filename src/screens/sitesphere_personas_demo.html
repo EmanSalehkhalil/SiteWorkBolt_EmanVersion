@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteSphere – Personas</title>
+<style>
+:root{--green:#1a6cf0;--green-d:#1558c9;--ok:#1a9d4b;--dark:#101828;--bg:#f8f9fc;--card:#fff;--line:#e6e9f0;--txt:#101828;--mut:#667085;--red:#d64545;--amber:#e69b00;--blue:#2b6fd6}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+header{background:var(--dark);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:18px;margin:0;font-weight:600}
+header small{color:#a9c7b4;display:block;font-weight:400;font-size:12px;margin-top:2px}
+.logo{display:inline-block;width:12px;height:12px;background:var(--green);border-radius:3px;margin-right:10px}
+.page{padding:26px 32px 40px;max-width:1360px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.card h2{font-size:14px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.kpi b{font-size:30px;display:block;margin-top:4px;letter-spacing:-.5px}.kpi span{color:var(--mut);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ico svg{width:20px;height:20px;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ico.b{background:#eaf1fe}.ico.b svg{stroke:#1a6cf0}.ico.g{background:#e6f6ec}.ico.g svg{stroke:#1a9d4b}
+.ico.o{background:#fff3e0}.ico.o svg{stroke:#e69b00}.ico.r{background:#fdecec}.ico.r svg{stroke:#d64545}.ico.p{background:#f1ebfd}.ico.p svg{stroke:#7a4fd6}
+
+/* ---------- SiteSphere shell ---------- */
+.app{display:flex;min-height:100vh}
+.side{width:272px;flex:0 0 272px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 18px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;color:var(--green);padding:0 10px 22px}
+.brand i{width:32px;height:32px;border-radius:8px;background:var(--green);display:flex;align-items:center;justify-content:center}
+.brand i svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.2}
+.navlbl{font-size:11px;letter-spacing:.08em;color:#98a2b3;font-weight:600;padding:6px 12px 10px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;margin-bottom:4px;border-radius:10px;color:#344054;font-weight:500;font-size:14.5px;cursor:pointer;text-decoration:none}
+.nav a svg{width:20px;height:20px;stroke:#667085;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 20px}
+.nav a:hover{background:#f4f6fa}
+.nav a.on{background:#eaf1fe;color:var(--green);font-weight:600}.nav a.on svg{stroke:var(--green)}
+.side .bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
+.content{flex:1;min-width:0}
+.topbar{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:5}
+.crumb{display:flex;align-items:center;gap:10px;font-weight:600;color:#344054}
+.crumb svg{width:18px;height:18px;stroke:#667085;fill:none;stroke-width:1.8}
+.tsearch{position:relative;width:290px}
+.tsearch input{padding-left:34px;border-radius:10px;background:#fafbfd}
+.tsearch svg{position:absolute;left:11px;top:10px;width:16px;height:16px;stroke:#98a2b3;fill:none;stroke-width:2}
+.tright{display:flex;align-items:center;gap:22px}
+.bell{position:relative;width:20px;height:20px}.bell svg{width:20px;height:20px;stroke:#475467;fill:none;stroke-width:1.8}
+.bell::after{content:"";position:absolute;top:-2px;right:-1px;width:7px;height:7px;background:#ef4444;border-radius:50%}
+.who{display:flex;align-items:center;gap:12px;border-left:1px solid var(--line);padding-left:22px}
+.who b{font-size:13.5px}.who small{color:var(--mut);font-size:11px;margin-left:4px}
+.av{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #d6e4fc}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.ph .tags{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:13px;margin-bottom:8px}
+.back{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center}
+.back svg{width:14px;height:14px;stroke:#475467;fill:none;stroke-width:2}
+.ref{background:#f2f4f7;border-radius:20px;padding:3px 11px;font-size:11.5px;letter-spacing:.02em}
+.ph h1{margin:0;font-size:32px;letter-spacing:-.8px;font-weight:700}
+.ph .acts{display:flex;gap:10px}
+.btn.o{background:#fff;border:1px solid var(--line);color:var(--txt)}.btn.o:hover{background:#f4f6fa}
+.page.hide{display:none!important}
+.empty{text-align:center;padding:70px 20px;color:var(--mut)}
+.empty h3{color:var(--txt);margin:0 0 6px}
+label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin-bottom:5px}
+label .req{color:var(--red)}
+input,select{width:100%;padding:9px 10px;border:1px solid #cdd7d1;border-radius:7px;font-size:14px;background:#fff;font-family:inherit}
+input:focus,select:focus{outline:2px solid #bcd3fb;border-color:var(--green)}
+input.err,select.err{border-color:var(--red);background:#fff6f6}
+.err-msg{color:var(--red);font-size:11px;margin-top:3px;display:none}
+.field{flex:1;min-width:200px}
+.btn{border:0;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn.p{background:var(--green);color:#fff}.btn.p:hover{background:var(--green-d)}
+.btn.s{background:#fff;border:1px solid #cdd7d1;color:var(--txt)}.btn.s:hover{background:#f0f4f1}
+.btn.sm{padding:5px 10px;font-size:12px}
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.pill.act{background:#dff6e4;color:#1a7a31}.pill.ina{background:#eceeed;color:#6b7c72}
+.pill.se{background:#e3f0ff;color:#1d58b3}.pill.sub{background:#fff1d9;color:#a46a00}
+.seg{display:inline-flex;border:1px solid #cdd7d1;border-radius:7px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:8px 14px;cursor:pointer;font-size:14px;font-family:inherit}
+.seg button.on{background:var(--green);color:#fff;font-weight:600}
+.planned{font-size:22px;font-weight:700;color:var(--green-d)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);padding:9px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:#fafcfb}
+.sub-t{color:var(--mut);font-size:12px}
+.toolbar{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.toolbar input,.toolbar select{width:auto;min-width:170px}
+.modal-bg{position:fixed;inset:0;background:rgba(10,30,18,.55);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;z-index:20}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:760px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal.wide{max-width:960px}
+.mh{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.mh h3{margin:0;font-size:17px}
+.mb{padding:20px 22px}.mf{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;background:#fafcfb;border-radius:0 0 12px 12px}
+.x{background:none;border:0;font-size:22px;cursor:pointer;color:var(--mut)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid .full{grid-column:1/-1}
+.hide{display:none!important}
+.btn:disabled{background:#d9dfdb;color:#8a948e;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1px solid #cdd7d1;background:#fff;border-radius:22px;padding:9px 18px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--txt)}
+.chip:hover{background:#f0f4f1}
+.chip.on{background:#eaf1fe;border-color:var(--green);color:var(--green-d)}
+.chip.sm{padding:5px 12px;font-size:12px}
+.quick{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+.eq-group{margin-bottom:10px}
+.eq-group h4{margin:0 0 6px;font-size:12px;color:var(--green-d);text-transform:uppercase}
+.eq-list{display:flex;flex-wrap:wrap;gap:8px}
+.eq{display:flex;align-items:center;gap:6px;border:1px solid #cdd7d1;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:13px;user-select:none}
+.eq input{width:auto;margin:0}
+.eq.sel{background:#eaf1fe;border-color:var(--green)}
+.note{background:#eef6ff;border:1px solid #cfe2fb;color:#1d4f9c;border-radius:7px;padding:8px 12px;font-size:12px;margin-top:6px}
+.note.warn{background:#fff6e0;border-color:#f3dba3;color:#8a5a00}
+.tgl{display:flex;align-items:center;gap:10px}
+.sw{position:relative;width:44px;height:24px;background:#c5cec9;border-radius:20px;cursor:pointer;transition:.2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+.sw.on{background:var(--green)}.sw.on::after{left:23px}
+.ts input[type=number]{width:90px;text-align:center}
+.ts tr.nonwork td{background:#f7f7f7;color:#8a948e}
+.ts tr.off td{background:#fdf2f2}
+.var-pos{color:var(--ok);font-weight:600}.var-neg{color:var(--red);font-weight:600}
+.sumbar{display:flex;gap:26px;flex-wrap:wrap;background:#f5f8ff;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:14px}
+.sumbar div b{display:block;font-size:20px}.sumbar span{font-size:12px;color:var(--mut)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:#fff;padding:12px 18px;border-radius:8px;opacity:0;transition:.3s;z-index:50;pointer-events:none}
+.toast.show{opacity:1}
+.demo-tag{background:#ffe9a8;color:#6b4a00;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:10px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><i><svg viewBox="0 0 24 24" ><path d="M4 8l8-4 8 4-8 4zM4 12l8 4 8-4M4 16l8 4 8-4"/></svg></i>SiteSphere</div>
+  <div class="navlbl">MAIN NAVIGATION</div>
+  <nav class="nav"><a data-p="Dashboard" onclick="go('Dashboard')"><svg viewBox="0 0 24 24" ><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a><a data-p="Submittals" onclick="go('Submittals')"><svg viewBox="0 0 24 24" ><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Submittals</a><a data-p="Issues" onclick="go('Issues')"><svg viewBox="0 0 24 24" ><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Issues</a><a data-p="Company Checklists" onclick="go('Company Checklists')"><svg viewBox="0 0 24 24" ><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 16v-4M12 16V9M16 16v-2"/></svg>Company Checklists</a><a data-p="Milestones" onclick="go('Milestones')"><svg viewBox="0 0 24 24" ><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Milestones</a><a data-p="Reports" onclick="go('Reports')"><svg viewBox="0 0 24 24" ><path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3"/></svg>Reports</a><a data-p="Personas" onclick="go('Personas')"><svg viewBox="0 0 24 24" ><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/><path d="M17.5 14c2.5.3 4 2 4 5"/></svg>Personas</a><a data-p="Assets & Equipment" onclick="go('Assets & Equipment')"><svg viewBox="0 0 24 24" ><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-2.3-.7-.7-2.3z"/></svg>Assets & Equipment</a><a data-p="Change Log" onclick="go('Change Log')"><svg viewBox="0 0 24 24" ><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>Change Log</a></nav>
+  <div class="bottom nav">
+    <a onclick="toast('Demo only')"><svg viewBox="0 0 24 24" ><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Switch Project</a>
+    <a onclick="toast('Demo only')"><svg viewBox="0 0 24 24" ><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sign Out</a>
+  </div>
+</aside>
+<div class="content">
+  <div class="topbar">
+    <div class="crumb"><svg viewBox="0 0 24 24" ><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h.01M15 8h.01M9 12h.01M15 12h.01M10 21v-4h4v4"/></svg>Data Center Alpha <span style="color:#98a2b3">›</span></div>
+    <div class="tright">
+      <div class="tsearch"><svg viewBox="0 0 24 24" ><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="Search site data..."></div>
+      <div class="bell"><svg viewBox="0 0 24 24" ><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+      <div class="who"><div><b>Marcus Thorne</b><small>Project Manager</small></div><div class="av">MT</div></div>
+    </div>
+  </div>
+
+<main class="page hide" id="pgPersonas">
+<div class="ph">
+  <div>
+    <div class="tags"><span class="back"><svg viewBox="0 0 24 24" ><path d="M15 18l-6-6 6-6"/></svg></span><span>Project access</span><span class="ref">REF: DC-ALPHA-SE-092</span></div>
+    <h1>Personas</h1>
+  </div>
+  <div class="acts"><button class="btn p" onclick="openEmp()">+ Add Employee</button></div>
+</div>
+
+
+<div class="card">
+  <h2>Project default schedule</h2>
+  <div class="row">
+    <div><label>Working days / week</label><b style="font-size:18px" id="pDays">5 days</b></div>
+    <div><label>Working hours / day</label><b style="font-size:18px" id="pHrs">8 hours</b></div>
+    <div><label>Project default planned hours / week</label><div class="planned" id="plannedWeek">40 h</div></div>
+    <div class="sub-t" style="max-width:340px">Set once at project level. New employees inherit it unless a different schedule is chosen for them.</div>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="ico b"><svg viewBox="0 0 24 24" ><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="9" r="2.5"/></svg></div><span>Total personas</span><b id="kTotal">0</b></div>
+  <div class="kpi"><div class="ico g"><svg viewBox="0 0 24 24" ><path d="M5 12l5 5 9-10"/></svg></div><span>Active</span><b id="kActive">0</b></div>
+  <div class="kpi"><div class="ico b"><svg viewBox="0 0 24 24" ><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12l2 2 4-4"/></svg></div><span>Schneider employees</span><b id="kSE">0</b></div>
+  <div class="kpi"><div class="ico o"><svg viewBox="0 0 24 24" ><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-2.3-.7-.7-2.3z"/></svg></div><span>Subcontractors</span><b id="kSub">0</b></div>
+  <div class="kpi"><div class="ico p"><svg viewBox="0 0 24 24" ><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><span>Planned h / week</span><b id="kHrs">0</b></div>
+</div>
+
+<div class="card">
+  <h2>People with access</h2>
+  <div class="toolbar">
+    <input id="fSearch" placeholder="Search name, email, SESA, company…" oninput="renderList()">
+    <select id="fType" onchange="renderList()"><option value="">All types</option><option>Schneider Electric</option><option>Subcontractor</option></select>
+    <select id="fSeg" onchange="renderList()"><option value="">All segments</option></select>
+    <select id="fStatus" onchange="renderList()"><option value="">All statuses</option><option>Active</option><option>Inactive</option></select>
+  </div>
+  <div style="overflow:auto">
+  <table>
+    <thead><tr><th>Employee</th><th>Type</th><th>Job Ref / SO #</th><th>Segment</th><th>Job profile</th><th>Domain</th><th>Equipment</th><th>Status</th><th>Planned h/wk</th><th></th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table></div>
+</div>
+</main>
+<main class="page" id="pgOther">
+  <div class="ph"><div><div class="tags"><span class="ref">REF: DC-ALPHA-SE-092</span></div><h1 id="otherTitle">Dashboard</h1></div></div>
+  <div class="card empty"><h3>This screen isn't part of the demo</h3><p>Click <b>Personas</b> in the sidebar to see the module.</p></div>
+</main>
+</div></div>
+
+<!-- Add / Edit modal -->
+<div class="modal-bg" id="empModal">
+ <div class="modal">
+  <div class="mh"><h3 id="empTitle">Add Employee</h3><button class="x" onclick="closeM('empModal')">×</button></div>
+  <div class="mb"><div class="grid">
+    <div><label>Employee name <span class="req">*</span></label><input id="fName" placeholder="e.g. Ahmed Hassan"><div class="err-msg">Required</div></div>
+    <div><label>Employee email <span class="req">*</span></label><input id="fEmail" type="email" placeholder="name@company.com"><div class="err-msg">Enter a valid email</div></div>
+
+    <div class="full"><label>Employee type <span class="req">*</span></label>
+      <div class="seg" id="segType"><button data-v="Schneider Electric" class="on">Schneider Electric employee</button><button data-v="Subcontractor">Subcontractor</button></div></div>
+
+    <div id="sesaWrap"><label>SESA <span class="req">*</span></label><input id="fSesa" placeholder="e.g. SESA759801"><div class="err-msg">Required</div></div>
+    <div id="companyWrap" class="hide"><label>Company <span class="req">*</span></label><input id="fCompany" placeholder="Subcontractor company name"><div class="err-msg">Required</div></div>
+
+    <div><label>Job Ref / SO # <span class="req">*</span></label><input id="fJob" placeholder="WO-13576612"><div class="err-msg">Format: WO-12345678</div></div>
+    <div><label>Segment <span class="req">*</span></label><select id="fSegment" onchange="onSegment()"><option value="">Select…</option></select><div class="err-msg">Required</div></div>
+
+    <div><label>Job profile <span class="req">*</span></label><select id="fProfile" onchange="onProfile()"><option value="">Select…</option></select><div class="err-msg">Required</div>
+      <div class="sub-t" style="margin-top:3px">List pending confirmation from Sami Ismail (placeholder values).</div></div>
+    <div id="otherWrap" class="hide"><label>New job profile name <span class="req">*</span></label><input id="fOther" placeholder="Type the new job profile"><div class="err-msg">Required</div></div>
+
+    <div><label>Domain <span class="req">*</span></label><select id="fDomain"><option value="">Select…</option></select><div class="err-msg">Required</div></div>
+    <div><label>Status</label>
+      <div class="tgl"><div class="sw on" id="swStatus" onclick="toggleStatus()"></div><b id="statusTxt">Active</b></div>
+      </div>
+    <div class="full" id="schedWrap"><label>Planned hours per week</label>
+      <div class="chips" id="schedChips"></div>
+      <div class="sub-t" id="schedNote" style="margin-top:8px"></div></div>
+
+    <div class="full"><label>Equipment access</label>
+      <div id="eqBox"></div>
+      <div class="note" id="eqNote">Select a segment to see the equipment you can grant access to.</div></div>
+  </div></div>
+  <div class="mf"><button class="btn s" onclick="closeM('empModal')">Cancel</button><button class="btn p" onclick="saveEmp()">Save employee</button></div>
+ </div>
+</div>
+
+<!-- Timesheet modal -->
+<div class="modal-bg" id="tsModal">
+ <div class="modal wide">
+  <div class="mh"><div><h3 id="tsTitle">Timesheet</h3><div class="sub-t" id="tsSub"></div></div><button class="x" onclick="closeM('tsModal')">×</button></div>
+  <div class="mb">
+    <div class="note warn hide" id="tsInactive" style="margin:0 0 12px">This employee is <b>inactive</b> – planned hours are 0 and timesheet entry is locked.</div>
+    <div class="card" style="background:#fafcfb;margin-bottom:14px">
+      <div class="quick"><span class="sub-t">Quick select:</span>
+        <button class="chip sm" onclick="quick('last')">Last week</button>
+        <button class="chip sm" onclick="quick('this')">This week</button>
+        <button class="chip sm" onclick="quick('2w')">Last 2 weeks</button>
+        <button class="chip sm" onclick="quick('month')">This month</button>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div class="field" style="max-width:170px"><label>From</label><input type="date" id="tsFrom" oninput="onFrom()"></div>
+        <div class="field" style="max-width:170px"><label>To</label><input type="date" id="tsTo" oninput="tsPreview()"></div>
+        <div class="field" style="max-width:170px"><label>Hours worked</label><input type="number" id="tsHours" min="0" step="0.5" placeholder="0" oninput="tsPreview()" onkeydown="if(event.key==='Enter')addEntry()"></div>
+        <div><label>&nbsp;</label><label class="eq" id="offLbl" style="margin:0;color:inherit;font-weight:600"><input type="checkbox" id="tsOff" onchange="tsPreview()"> OFF</label></div>
+        <div><label>&nbsp;</label><button class="btn p" id="tsSave" onclick="addEntry()">Save</button></div>
+      </div>
+      <div class="note" id="tsPrev" style="margin-top:12px"></div>
+    </div>
+
+    <h2 style="font-size:13px;margin:0 0 8px;color:var(--mut);text-transform:uppercase">Recorded entries</h2>
+    <div style="max-height:300px;overflow:auto"><table>
+      <thead><tr><th>From</th><th>To</th><th>Days</th><th>Planned</th><th>Worked</th><th>Variance</th><th></th></tr></thead>
+      <tbody id="tsBody"></tbody>
+    </table></div>
+    <div class="sumbar"><div><b id="sPlanned">0</b><span>Total planned</span></div><div><b id="sActual">0</b><span>Total worked</span></div><div><b id="sVar">0</b><span>Variance</span></div><div><b id="sOff">0</b><span>OFF entries</span></div></div>
+  </div>
+  <div class="mf"><button class="btn p" onclick="closeM('tsModal')">Done</button></div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SEGMENTS=["Electrical","Automation","Mechanical","Project Management Support"];
+const DOMAINS=["Power Systems","Secure Power"];
+const PROFILES=["Site Manager","Quality Manager","Commissioning Engineer","Electrical Technician","Mechanical Technician","Automation Engineer","Project Coordinator","HSE Officer","Other"];
+// Equipment of the project, tagged by activity
+const EQUIP=[
+ {id:"CH-01",n:"Chiller CH-01",g:"Mechanical"},{id:"CT-01",n:"Cooling Tower CT-01",g:"Mechanical"},
+ {id:"P-101",n:"Pump Skid P-101",g:"Mechanical"},{id:"AHU-02",n:"Air Handler AHU-02",g:"Mechanical"},
+ {id:"MVS-01",n:"MV Switchgear MVS-01",g:"Electrical"},{id:"LVS-02",n:"LV Switchboard LVS-02",g:"Electrical"},
+ {id:"TR-01",n:"Transformer TR-01",g:"Electrical"},{id:"UPS-01",n:"UPS Module UPS-01",g:"Electrical"},
+ {id:"PLC-01",n:"PLC Panel PLC-01",g:"Automation"},{id:"SCD-01",n:"SCADA Server SCD-01",g:"Automation"},
+ {id:"BMS-01",n:"BMS Controller BMS-01",g:"Automation"},{id:"PR-01",n:"Protection Relay PR-01",g:"Automation"}
+];
+const GROUPS=["Mechanical","Electrical","Automation"];
+// Which equipment groups each segment may access
+const ACCESS={"Mechanical":["Mechanical"],"Electrical":["Electrical"],"Automation":["Automation"],"Project Management Support":["Mechanical","Electrical","Automation"]};
+
+const PROJECT={days:5,hrs:8}; // project default, configured at project level
+const OPTIONS=[{k:"default",l:null},{k:"5x8",days:5,hrs:8},{k:"5x10",days:5,hrs:10},{k:"6x8",days:6,hrs:8},{k:"6x10",days:6,hrs:10}];
+const optLabel=o=>o.k==="default"?"Project standard ("+PROJECT.days*PROJECT.hrs+" h)":o.days+" d × "+o.hrs+" h";
+const schedOf=k=>{const o=OPTIONS.find(x=>x.k===k)||OPTIONS[0];return o.k==="default"?PROJECT:{days:o.days,hrs:o.hrs}};
+const empSched=e=>schedOf(e.sched);
+const schedLabel=e=>e.sched==="default"?"Project standard":empSched(e).days+" d × "+empSched(e).hrs+" h";
+let emps=[], ts={}, nextId=7, editId=null, form={type:"Schneider Electric",active:true,eq:[],sched:"default"}, tsEmp=null, tsRows=[];
+
+const $=id=>document.getElementById(id);
+const formSched=()=>schedOf(form.sched);
+const empWeek=e=>{if(!e.active)return 0;const x=empSched(e);return x.days*x.hrs};
+
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const parse=s=>{const[a,b,c]=s.split("-").map(Number);return new Date(a,b-1,c)};
+const DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const isWorkDay=(d,sc)=>{const w=d.getDay();return w>=1&&w<=sc.days}; // Mon–Fri (5) or Mon–Sat (6)
+
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function closeM(id){$(id).classList.remove("show")}
+
+// ---------- seed ----------
+function seed(){
+ emps=[
+ {id:1,sched:"default",name:"Karen Maged",email:"karen.maged@se.com",type:"Schneider Electric",sesa:"SESA812345",company:"",job:"WO-13576612",segment:"Project Management Support",profile:"Site Manager",domain:"Power Systems",eq:EQUIP.map(e=>e.id),active:true},
+ {id:2,sched:"6x10",name:"Ahmed Elshahat",email:"ahmed.elshahat@se.com",type:"Schneider Electric",sesa:"SESA759801",company:"",job:"WO-13576612",segment:"Electrical",profile:"Commissioning Engineer",domain:"Power Systems",eq:["MVS-01","LVS-02","TR-01"],active:true},
+ {id:3,sched:"6x8",name:"Omar Fathy",email:"omar.fathy@coolserve.com",type:"Subcontractor",sesa:"",company:"CoolServe Mechanical",job:"WO-13576612",segment:"Mechanical",profile:"Mechanical Technician",domain:"Secure Power",eq:["CH-01","CT-01","P-101"],active:true},
+ {id:4,sched:"default",name:"Doha Aboubakr",email:"doha.aboubakr@se.com",type:"Schneider Electric",sesa:"SESA640221",company:"",job:"WO-13576612",segment:"Automation",profile:"Automation Engineer",domain:"Secure Power",eq:["PLC-01","SCD-01","BMS-01"],active:true},
+ {id:5,sched:"5x10",name:"Youssef Nabil",email:"y.nabil@voltpro.com",type:"Subcontractor",sesa:"",company:"VoltPro Contracting",job:"WO-13576612",segment:"Electrical",profile:"Electrical Technician",domain:"Power Systems",eq:["UPS-01","LVS-02"],active:false},
+ {id:6,sched:"default",name:"Mariam Adel",email:"mariam.adel@se.com",type:"Schneider Electric",sesa:"SESA700918",company:"",job:"WO-13576612",segment:"Mechanical",profile:"Quality Manager",domain:"Power Systems",eq:["AHU-02","P-101"],active:true}
+ ];
+ ts={1:[{from:"2026-10-26",to:"2026-10-30",hours:40,off:false}],
+  2:[{from:"2026-10-26",to:"2026-10-31",hours:43,off:false}],
+  3:[{from:"2026-10-26",to:"2026-10-27",hours:16,off:false},{from:"2026-10-28",to:"2026-10-28",hours:0,off:true},{from:"2026-10-29",to:"2026-10-31",hours:24,off:false}],
+  4:[{from:"2026-10-26",to:"2026-10-29",hours:32,off:false},{from:"2026-10-30",to:"2026-10-30",hours:0,off:true}],
+  6:[{from:"2026-10-26",to:"2026-10-30",hours:40,off:false}]};
+}
+
+// ---------- project default ----------
+function initProject(){
+ $("pDays").textContent=PROJECT.days+" days";$("pHrs").textContent=PROJECT.hrs+" hours";
+ $("plannedWeek").textContent=PROJECT.days*PROJECT.hrs+" h  ("+PROJECT.days+" d × "+PROJECT.hrs+" h)";
+}
+
+// ---------- list ----------
+function renderList(){
+ const q=$("fSearch").value.toLowerCase(),t=$("fType").value,s=$("fSeg").value,st=$("fStatus").value;
+ const rows=emps.filter(e=>(!t||e.type===t)&&(!s||e.segment===s)&&(!st||(e.active?"Active":"Inactive")===st)
+  &&(!q||[e.name,e.email,e.sesa,e.company,e.job].join(" ").toLowerCase().includes(q)));
+ $("tbody").innerHTML=rows.map(e=>`<tr>
+  <td><b>${e.name}</b><div class="sub-t">${e.email}</div></td>
+  <td><span class="pill ${e.type==="Subcontractor"?"sub":"se"}">${e.type}</span><div class="sub-t">${e.type==="Subcontractor"?e.company:e.sesa}</div></td>
+  <td>${e.job}</td><td>${e.segment}</td><td>${e.profile}</td><td>${e.domain}</td>
+  <td>${e.eq.length} / ${EQUIP.length}</td>
+  <td><span class="pill ${e.active?"act":"ina"}">${e.active?"Active":"Inactive"}</span></td>
+  <td><b>${empWeek(e)} h</b><div class="sub-t">${e.active?schedLabel(e):"Inactive"}</div></td>
+  <td style="white-space:nowrap"><button class="btn s sm" onclick="openTs(${e.id})">Timesheet</button> <button class="btn s sm" onclick="openEmp(${e.id})">Edit</button></td></tr>`).join("")
+  ||`<tr><td colspan="10" class="sub-t" style="text-align:center;padding:24px">No employees match your filters.</td></tr>`;
+ $("kTotal").textContent=emps.length;
+ $("kActive").textContent=emps.filter(e=>e.active).length;
+ $("kSE").textContent=emps.filter(e=>e.type==="Schneider Electric").length;
+ $("kSub").textContent=emps.filter(e=>e.type==="Subcontractor").length;
+ $("kHrs").textContent=emps.reduce((a,e)=>a+empWeek(e),0);
+}
+
+// ---------- add / edit form ----------
+function fill(sel,arr){arr.forEach(v=>{const o=document.createElement("option");o.textContent=v;sel.appendChild(o)})}
+function updateStatusNote(){
+ $("statusTxt").textContent=form.active?"Active":"Inactive";
+ $("swStatus").classList.toggle("on",form.active);
+ const box=$("schedChips");
+ box.innerHTML=OPTIONS.map(o=>`<button type="button" class="chip ${form.sched===o.k?"on":""}" ${form.active?"":"disabled"} onclick="setSched('${o.k}')">${optLabel(o)}</button>`).join("");
+ const n=$("schedNote");
+ if(!form.active){n.innerHTML="Inactive – planned hours per week: <b>0 h</b>";return}
+ const sc=formSched();
+ n.innerHTML="Project default: <b>"+PROJECT.days+" days × "+PROJECT.hrs+" h = "+PROJECT.days*PROJECT.hrs+" h per week</b>."
+  +(form.sched!=="default"?" Selected for this employee: <b>"+sc.days+" d × "+sc.hrs+" h = "+sc.days*sc.hrs+" h per week</b>.":"");
+}
+function setSched(k){form.sched=k;updateStatusNote()}
+function toggleStatus(){form.active=!form.active;updateStatusNote()}
+function setType(v){
+ form.type=v;
+ $("segType").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+ $("sesaWrap").classList.toggle("hide",v!=="Schneider Electric");
+ $("companyWrap").classList.toggle("hide",v!=="Subcontractor");
+}
+function onProfile(){$("otherWrap").classList.toggle("hide",$("fProfile").value!=="Other")}
+function onSegment(){
+ const seg=$("fSegment").value;
+ const allowed=ACCESS[seg]||[];
+ form.eq=form.eq.filter(id=>allowed.includes(EQUIP.find(e=>e.id===id).g));
+ renderEq();
+}
+function renderEq(){
+ const seg=$("fSegment").value,allowed=ACCESS[seg];
+ if(!allowed){$("eqBox").innerHTML="";$("eqNote").className="note";$("eqNote").textContent="Select a segment to see the equipment you can grant access to.";return}
+ $("eqBox").innerHTML=GROUPS.filter(g=>allowed.includes(g)).map(g=>`<div class="eq-group"><h4>${g}</h4><div class="eq-list">`+
+  EQUIP.filter(e=>e.g===g).map(e=>`<label class="eq ${form.eq.includes(e.id)?"sel":""}" style="margin:0;color:inherit;font-weight:400"><input type="checkbox" ${form.eq.includes(e.id)?"checked":""} onchange="toggleEq('${e.id}')">${e.n}</label>`).join("")+`</div></div>`).join("");
+ $("eqNote").className="note";
+ $("eqNote").textContent=seg==="Project Management Support"?"Project Management Support can be granted access to equipment from all activities.":seg+" personnel only see equipment relevant to "+seg.toLowerCase()+" activities.";
+}
+function toggleEq(id){form.eq=form.eq.includes(id)?form.eq.filter(x=>x!==id):[...form.eq,id];renderEq()}
+
+function openEmp(id){
+ editId=id||null;
+ const e=id?emps.find(x=>x.id===id):null;
+ $("empTitle").textContent=e?"Edit Employee":"Add Employee";
+ document.querySelectorAll("#empModal .err").forEach(x=>x.classList.remove("err"));
+ document.querySelectorAll("#empModal .err-msg").forEach(x=>x.style.display="none");
+ $("fName").value=e?e.name:"";$("fEmail").value=e?e.email:"";
+ $("fSesa").value=e?e.sesa:"";$("fCompany").value=e?e.company:"";
+ $("fJob").value=e?e.job:"";$("fSegment").value=e?e.segment:"";
+ const known=e&&PROFILES.includes(e.profile);
+ $("fProfile").value=e?(known?e.profile:"Other"):"";$("fOther").value=e&&!known?e.profile:"";
+ $("fDomain").value=e?e.domain:"";
+ form={type:e?e.type:"Schneider Electric",active:e?e.active:true,eq:e?[...e.eq]:[],sched:e?e.sched:"default"};
+ setType(form.type);onProfile();updateStatusNote();renderEq();
+ $("empModal").classList.add("show");
+}
+function bad(id,cond){const el=$(id);el.classList.toggle("err",cond);const m=el.parentElement.querySelector(".err-msg");if(m)m.style.display=cond?"block":"none";return cond}
+function saveEmp(){
+ let b=false;
+ b|=bad("fName",!$("fName").value.trim());
+ b|=bad("fEmail",!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("fEmail").value.trim()));
+ if(form.type==="Schneider Electric")b|=bad("fSesa",!$("fSesa").value.trim());else b|=bad("fCompany",!$("fCompany").value.trim());
+ b|=bad("fJob",!/^WO-\d{6,}$/i.test($("fJob").value.trim()));
+ b|=bad("fSegment",!$("fSegment").value);
+ b|=bad("fProfile",!$("fProfile").value);
+ if($("fProfile").value==="Other")b|=bad("fOther",!$("fOther").value.trim());
+ b|=bad("fDomain",!$("fDomain").value);
+ if(b){toast("Please complete the highlighted fields");return}
+ const rec={id:editId||nextId++,name:$("fName").value.trim(),email:$("fEmail").value.trim(),type:form.type,
+  sesa:form.type==="Schneider Electric"?$("fSesa").value.trim().toUpperCase():"",
+  company:form.type==="Subcontractor"?$("fCompany").value.trim():"",
+  job:$("fJob").value.trim().toUpperCase(),segment:$("fSegment").value,
+  profile:$("fProfile").value==="Other"?$("fOther").value.trim():$("fProfile").value,
+  domain:$("fDomain").value,eq:[...form.eq],active:form.active,sched:form.sched};
+ if(editId)emps=emps.map(e=>e.id===editId?rec:e);else emps.push(rec);
+ closeM("empModal");renderList();toast(editId?"Employee updated":"Employee added – planned hours: "+empWeek(rec)+" h/week");
+}
+
+// ---------- timesheet ----------
+const fmt=k=>parse(k).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+function rangeInfo(from,to,off){
+ const sc=empSched(tsEmp);let days=0,planned=0;
+ for(let d=parse(from);d<=parse(to);d.setDate(d.getDate()+1)){days++;if(isWorkDay(d,sc))planned+=sc.hrs}
+ return{days,planned:(tsEmp.active&&!off)?planned:0};
+}
+function openTs(id){
+ tsEmp=emps.find(e=>e.id===id);
+ $("tsTitle").textContent="Timesheet – "+tsEmp.name;
+ $("tsSub").textContent=tsEmp.job+" · "+tsEmp.segment+" · "+(tsEmp.active?schedLabel(tsEmp):"Inactive")+" · planned "+empWeek(tsEmp)+" h/week";
+ $("tsInactive").classList.toggle("hide",tsEmp.active);
+ ["tsFrom","tsTo","tsHours","tsOff","tsSave"].forEach(i=>{const el=$(i);el.disabled=!tsEmp.active;if(el.type==="checkbox")el.checked=!tsEmp.active;else if(el.tagName==="INPUT")el.value=""});
+ document.querySelectorAll(".quick .chip").forEach(c=>c.disabled=!tsEmp.active);
+ if(tsEmp.active&&lastEnd()){$("tsFrom").value=nextDay(lastEnd())}
+ $("tsModal").classList.add("show");renderTs();tsPreview();
+}
+const conflictsOf=(f,t)=>(ts[tsEmp.id]||[]).filter(e=>!(t<e.from||f>e.to));
+const descConf=e=>fmt(e.from)+" → "+fmt(e.to)+" ("+(e.off?"OFF":e.hours+" h")+")";
+function lastEnd(){const l=ts[tsEmp.id]||[];return l.length?l.map(e=>e.to).sort().pop():null}
+function nextDay(k){const d=parse(k);d.setDate(d.getDate()+1);return iso(d)}
+function onFrom(){
+ const f=$("tsFrom").value,t=$("tsTo");
+ if(f&&(!t.value||t.value<f))t.value=f;      // To follows From by default
+ tsPreview();
+ if(f)$("tsHours").focus();
+}
+function quick(k){
+ const now=new Date(2026,10,1);now.setHours(0,0,0,0);          // today
+ const mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));
+ let a,z;
+ if(k==="this"){a=mon;z=new Date(mon);z.setDate(mon.getDate()+6)}
+ else if(k==="last"){a=new Date(mon);a.setDate(mon.getDate()-7);z=new Date(mon);z.setDate(mon.getDate()-1)}
+ else if(k==="2w"){a=new Date(mon);a.setDate(mon.getDate()-14);z=new Date(mon);z.setDate(mon.getDate()-1)}
+ else{a=new Date(now.getFullYear(),now.getMonth(),1);z=new Date(now.getFullYear(),now.getMonth()+1,0)}
+ $("tsFrom").value=iso(a);$("tsTo").value=iso(z);tsPreview();$("tsHours").focus();
+}
+function useGoal(h){$("tsHours").value=h;tsPreview();$("tsHours").focus()}
+function setSave(on){const b=$("tsSave");if(b)b.disabled=!on||!tsEmp.active;}
+function tsPreview(){
+ setSave(true);
+ const f=$("tsFrom").value,t=$("tsTo").value,off=$("tsOff").checked||!tsEmp.active,H=$("tsHours");
+ H.disabled=off;if(off)H.value="";
+ H.placeholder=off?"OFF":"e.g. 40";
+ const n=$("tsPrev");
+ if(!tsEmp.active){n.className="note warn";n.textContent="Inactive – planned hours are 0.";return}
+ if(!f||!t){n.className="note";n.innerHTML="① Pick the dates &nbsp;→&nbsp; ② Type the hours worked &nbsp;→&nbsp; ③ Press <b>Save</b> (or Enter).";return}
+ if(parse(t)<parse(f)){n.className="note warn";n.textContent="‘To date’ must be on or after ‘From date’.";return}
+ const r=rangeInfo(f,t,off),h=parseFloat(H.value);
+ const cf=conflictsOf(f,t);
+ if(cf.length){
+  n.className="note warn";
+  n.innerHTML="<b>⚠ Date collision.</b> These dates overlap "+(cf.length>1?cf.length+" existing entries":"an existing entry")+":<br>"+cf.map(descConf).join("<br>")
+   +"<div style='margin-top:6px'>Please <b>delete "+(cf.length>1?"them":"it")+" first</b> from the Recorded entries list below, or change the dates.</div>";
+  setSave(false);
+  return;
+ }
+ n.className="note";
+ n.innerHTML=fmt(f)+" → "+fmt(t)+" · <b>"+r.days+" day"+(r.days>1?"s":"")+"</b> · Planned hours: <b>"+r.planned+" h</b>"+(off?" (OFF – planned hours set to 0)":(r.planned?" <a href='#' onclick='useGoal("+r.planned+");return false' style='color:#1d58b3;font-weight:600'>Use "+r.planned+" h</a>":""))
+  +(!off&&!isNaN(h)?" · Variance: <b>"+(h-r.planned>0?"+":"")+(h-r.planned)+" h</b>":"");
+}
+function addEntry(){
+ let f=$("tsFrom").value,t=$("tsTo").value;const off=$("tsOff").checked,hv=$("tsHours").value;
+ if(!f){toast("Pick a From date");return}
+ if(!t){$("tsTo").value=t=f}
+ if(parse(t)<parse(f)){toast("‘To date’ must be on or after ‘From date’");return}
+ if(!off&&(hv===""||parseFloat(hv)<0)){toast("Write the hours worked or tick OFF");return}
+ const list=ts[tsEmp.id]=ts[tsEmp.id]||[];
+ if(conflictsOf(f,t).length){tsPreview();toast("Dates overlap – delete the existing entry first");return}
+ list.push({from:f,to:t,off,hours:off?0:parseFloat(hv)});
+ list.sort((a,b)=>a.from<b.from?-1:1);
+ $("tsFrom").value=nextDay(t);$("tsTo").value="";$("tsHours").value="";$("tsOff").checked=false;
+ renderTs();tsPreview();toast("Saved – "+(off?"OFF":hv+" h")+" for "+fmt(f)+" → "+fmt(t));$("tsTo").focus();
+}
+function delEntry(i){ts[tsEmp.id].splice(i,1);renderTs();tsPreview();toast("Entry deleted")}
+function renderTs(){
+ const list=ts[tsEmp.id]||[];let P=0,A=0,O=0;
+ $("tsBody").innerHTML=list.map((e,i)=>{
+  const r=rangeInfo(e.from,e.to,e.off),v=e.hours-r.planned;P+=r.planned;A+=e.hours;if(e.off)O++;
+  return `<tr class="${e.off?"off":""}"><td>${fmt(e.from)}</td><td>${fmt(e.to)}</td><td>${r.days}</td>
+   <td><b>${r.planned} h</b></td><td>${e.off?'<span class="pill ina">OFF</span>':'<b>'+e.hours+' h</b>'}</td>
+   <td><span class="${v>=0?"var-pos":"var-neg"}">${v>0?"+":""}${v} h</span></td>
+   <td><button class="btn s sm" onclick="delEntry(${i})">Delete</button></td></tr>`}).join("")
+  ||`<tr><td colspan="7" class="sub-t" style="text-align:center;padding:18px">No timesheet entries yet.</td></tr>`;
+ $("sPlanned").textContent=P+" h";$("sActual").textContent=A+" h";
+ const v=A-P;$("sVar").textContent=(v>0?"+":"")+v+" h";$("sVar").style.color=v<0?"var(--red)":"var(--ok)";$("sOff").textContent=O;
+}
+
+// ---------- navigation ----------
+function go(name){
+ document.querySelectorAll(".nav a[data-p]").forEach(a=>a.classList.toggle("on",a.dataset.p===name));
+ const per=name==="Personas";
+ $("pgPersonas").classList.toggle("hide",!per);$("pgOther").classList.toggle("hide",per);
+ if(!per)$("otherTitle").textContent=name;
+ window.scrollTo(0,0);
+}
+
+// ---------- init ----------
+fill($("fSegment"),SEGMENTS);fill($("fSeg"),SEGMENTS);fill($("fProfile"),PROFILES);fill($("fDomain"),DOMAINS);
+$("segType").querySelectorAll("button").forEach(b=>b.onclick=()=>setType(b.dataset.v));
+initProject();seed();go("Dashboard");renderList();
+</script>
+</body>
+</html>
