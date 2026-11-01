@@ -71,6 +71,7 @@ function ProjectCard({ project, onOpenDashboard }: { project: Project; onOpenDas
 
 type NewProjectForm = {
   projectName: string;
+  customer: string;
   city: string;
   country: string;
   segment: string;
@@ -80,7 +81,7 @@ type NewProjectForm = {
   opportunityNumber: string;
   siteManager: string;
   qualityManager: string;
-  commissioningTeam: string;
+  commissioningTeam: string[];
   workingDaysPerWeek: string;
   workingHoursPerDay: string;
   numberOfIssues: string;
@@ -90,6 +91,7 @@ type NewProjectForm = {
 
 const emptyForm: NewProjectForm = {
   projectName: '',
+  customer: '',
   city: '',
   country: '',
   segment: '',
@@ -99,7 +101,7 @@ const emptyForm: NewProjectForm = {
   opportunityNumber: '',
   siteManager: '',
   qualityManager: '',
-  commissioningTeam: '',
+  commissioningTeam: [''],
   workingDaysPerWeek: '',
   workingHoursPerDay: '',
   numberOfIssues: '0',
@@ -107,17 +109,91 @@ const emptyForm: NewProjectForm = {
   projectImage: '',
 };
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function emailError(value: string): string | null {
+  const v = value.trim();
+  if (!v) return 'This field is required';
+  if (!EMAIL_PATTERN.test(v)) return 'Enter a valid email address';
+  return null;
+}
+
+function requiredError(value: string): string | null {
+  return value.trim() ? null : 'This field is required';
+}
+
+function imageUrlError(value: string): string | null {
+  if (!value.trim()) return 'This field is required';
+  try {
+    const u = new URL(value.trim());
+    if (u.protocol !== 'http:' && u.protocol !== 'https:' && !value.startsWith('data:image/')) return 'Enter a valid image URL';
+  } catch {
+    if (!value.startsWith('data:image/')) return 'Enter a valid image URL';
+  }
+  return null;
+}
+
+function validateForm(form: NewProjectForm): Record<string, string> {
+  const errors: Record<string, string> = {};
+  const check = (key: string, msg: string | null) => { if (msg) errors[key] = msg; };
+  check('projectName', requiredError(form.projectName));
+  check('city', requiredError(form.city));
+  check('country', requiredError(form.country));
+  check('segment', requiredError(form.segment));
+  check('startDate', requiredError(form.startDate));
+  check('endDate', requiredError(form.endDate));
+  check('networkNumber', requiredError(form.networkNumber));
+  check('opportunityNumber', requiredError(form.opportunityNumber));
+  check('siteManager', emailError(form.siteManager));
+  check('qualityManager', emailError(form.qualityManager));
+  form.commissioningTeam.forEach((email, i) => check(`commissioningTeam-${i}`, emailError(email)));
+  check('workingDaysPerWeek', requiredError(form.workingDaysPerWeek));
+  check('workingHoursPerDay', requiredError(form.workingHoursPerDay));
+  check('projectImage', imageUrlError(form.projectImage));
+  return errors;
+}
+
 function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: () => void; onSubmit: (form: NewProjectForm) => Promise<void> }) {
   const [form, setForm] = useState<NewProjectForm>(emptyForm);
   const [imageMode, setImageMode] = useState<'link' | 'upload'>('link');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const errors = useMemo(() => validateForm(form), [form]);
+  const showError = (key: string) => (submitted || touched[key]) ? errors[key] : undefined;
+  const touch = (key: string) => setTouched((t) => (t[key] ? t : { ...t, [key]: true }));
+  const bind = (key: string) => ({
+    onBlur: () => touch(key),
+    'aria-invalid': showError(key) ? true : undefined,
+    className: showError(key) ? 'input-invalid' : undefined,
+    required: true,
+  });
+  const renderError = (key: string) => { const m = showError(key); return m ? <small className="modal-field-error" role="alert">{m}</small> : null; };
+
+  function updateTeamEmail(index: number, value: string) {
+    setForm((f) => ({ ...f, commissioningTeam: f.commissioningTeam.map((m, i) => (i === index ? value : m)) }));
+  }
+  function addTeamEmail() {
+    setForm((f) => ({ ...f, commissioningTeam: [...f.commissioningTeam, ''] }));
+  }
+  function removeTeamEmail(index: number) {
+    setForm((f) => ({ ...f, commissioningTeam: f.commissioningTeam.filter((_, i) => i !== index) }));
+    setTouched((t) => {
+      const next = { ...t };
+      Object.keys(next).forEach((k) => { if (k.startsWith('commissioningTeam-')) delete next[k]; });
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (open) {
       setForm(emptyForm);
       setImageMode('link');
       setSubmitError(null);
+      setTouched({});
+      setSubmitted(false);
     }
   }, [open]);
 
@@ -134,9 +210,11 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitError(null);
+    setSubmitted(true);
+    if (Object.keys(errors).length > 0) return;
     setSubmitting(true);
     try {
-      await onSubmit(form);
+      await onSubmit({ ...form, commissioningTeam: form.commissioningTeam.map((m) => m.trim()) });
       onClose();
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Failed to create project');
@@ -154,83 +232,113 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
           <h2>Create New Project</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close"><X size={18} /></button>
         </div>
-        <form className="modal-form" onSubmit={handleSubmit}>
+        <form className="modal-form" onSubmit={handleSubmit} noValidate>
           <label className="modal-field">
             <span>Project Name</span>
-            <input value={form.projectName} onChange={(e) => setForm({ ...form, projectName: e.target.value })} placeholder="Enter project name" required />
+            <input value={form.projectName} onChange={(e) => setForm({ ...form, projectName: e.target.value })} placeholder="Enter project name" {...bind('projectName')} />
+            {renderError('projectName')}
+          </label>
+          <label className="modal-field">
+            <span>Customer</span>
+            <input value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value })} placeholder="Enter customer name" />
           </label>
           <div className="modal-field-row">
             <label className="modal-field">
               <span>City</span>
-              <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Enter city" />
+              <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Enter city" {...bind('city')} />
+              {renderError('city')}
             </label>
             <label className="modal-field">
               <span>Country</span>
-              <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} placeholder="Enter country" />
+              <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} placeholder="Enter country" {...bind('country')} />
+              {renderError('country')}
             </label>
           </div>
           <label className="modal-field">
             <span>Segment</span>
-            <select value={form.segment} onChange={(e) => setForm({ ...form, segment: e.target.value })} required>
+            <select value={form.segment} onChange={(e) => setForm({ ...form, segment: e.target.value })} {...bind('segment')}>
               <option value="" disabled>Select segment</option>
               <option value="cloud and service provider">cloud and service provider</option>
               <option value="multitech">multitech</option>
             </select>
+            {renderError('segment')}
           </label>
           <div className="modal-field-row">
             <label className="modal-field">
               <span>Start Date</span>
-              <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} required />
+              <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} {...bind('startDate')} />
+              {renderError('startDate')}
             </label>
             <label className="modal-field">
               <span>End Date</span>
-              <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} required />
+              <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} {...bind('endDate')} />
+              {renderError('endDate')}
             </label>
           </div>
           
           <div className="modal-field-row">
             <label className="modal-field">
               <span>Network Number</span>
-              <input value={form.networkNumber} onChange={(e) => setForm({ ...form, networkNumber: e.target.value })} placeholder="Enter network number" />
+              <input value={form.networkNumber} onChange={(e) => setForm({ ...form, networkNumber: e.target.value })} placeholder="Enter network number" {...bind('networkNumber')} />
+              {renderError('networkNumber')}
             </label>
             <label className="modal-field">
               <span>Opportunity Number</span>
-              <input value={form.opportunityNumber} onChange={(e) => setForm({ ...form, opportunityNumber: e.target.value })} placeholder="Enter opportunity number" />
+              <input value={form.opportunityNumber} onChange={(e) => setForm({ ...form, opportunityNumber: e.target.value })} placeholder="Enter opportunity number" {...bind('opportunityNumber')} />
+              {renderError('opportunityNumber')}
             </label>
           </div>
           <div className="modal-field-row">
             <label className="modal-field">
               <span>Site Manager</span>
-              <input value={form.siteManager} onChange={(e) => setForm({ ...form, siteManager: e.target.value })} placeholder="Enter site manager" />
+              <input type="email" value={form.siteManager} onChange={(e) => setForm({ ...form, siteManager: e.target.value })} placeholder="Enter site manager email" {...bind('siteManager')} />
+              {renderError('siteManager')}
             </label>
             <label className="modal-field">
               <span>Quality Manager</span>
-              <input value={form.qualityManager} onChange={(e) => setForm({ ...form, qualityManager: e.target.value })} placeholder="Enter quality manager" />
+              <input type="email" value={form.qualityManager} onChange={(e) => setForm({ ...form, qualityManager: e.target.value })} placeholder="Enter quality manager email" {...bind('qualityManager')} />
+              {renderError('qualityManager')}
             </label>
           </div>
-          <label className="modal-field">
+          <div className="modal-field">
             <span>Commissioning Team</span>
-            <input value={form.commissioningTeam} onChange={(e) => setForm({ ...form, commissioningTeam: e.target.value })} placeholder="Add commissioning team members" />
+            {form.commissioningTeam.map((email, i) => {
+              const key = `commissioningTeam-${i}`;
+              return (
+                <div className="team-email-item" key={i}>
+                  <div className="team-email-row">
+                    <input type="email" value={email} onChange={(e) => updateTeamEmail(i, e.target.value)} placeholder="Enter team member email" aria-label={`Commissioning team member ${i + 1} email`} {...bind(key)} />
+                    {form.commissioningTeam.length > 1 && (
+                      <button type="button" className="team-email-remove" onClick={() => removeTeamEmail(i)} aria-label={`Remove team member ${i + 1}`}><X size={14} /></button>
+                    )}
+                  </div>
+                  {renderError(key)}
+                </div>
+              );
+            })}
+            <button type="button" className="team-email-add" onClick={addTeamEmail}><Plus size={13} /> Add another email</button>
             <small className="modal-field-hint">Multiple commissioning team members can be assigned to the same project.</small>
-          </label>
+          </div>
           <div className="modal-field">
             <span>Project Working Schedule</span>
             <div className="modal-field-row">
               <label className="modal-field">
                 <span>Working days per week</span>
-                <select value={form.workingDaysPerWeek} onChange={(e) => setForm({ ...form, workingDaysPerWeek: e.target.value })}>
+                <select value={form.workingDaysPerWeek} onChange={(e) => setForm({ ...form, workingDaysPerWeek: e.target.value })} {...bind('workingDaysPerWeek')}>
                   <option value="">Select days</option>
                   <option value="5">5 days</option>
                   <option value="6">6 days</option>
                 </select>
+                {renderError('workingDaysPerWeek')}
               </label>
               <label className="modal-field">
                 <span>Working hours per day</span>
-                <select value={form.workingHoursPerDay} onChange={(e) => setForm({ ...form, workingHoursPerDay: e.target.value })}>
+                <select value={form.workingHoursPerDay} onChange={(e) => setForm({ ...form, workingHoursPerDay: e.target.value })} {...bind('workingHoursPerDay')}>
                   <option value="">Select hours</option>
                   <option value="8">8 hours</option>
                   <option value="10">10 hours</option>
                 </select>
+                {renderError('workingHoursPerDay')}
               </label>
             </div>
           </div>
@@ -241,7 +349,10 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
               {/* <button type="button" className={imageMode === 'upload' ? 'active' : ''} onClick={() => setImageMode('upload')}><Upload size={13} /> Upload from Computer</button> */}
             </div>
             {imageMode === 'link' ? (
-              <input value={form.projectImage} onChange={(e) => setForm({ ...form, projectImage: e.target.value })} placeholder="Paste image URL (https://...)" />
+              <>
+                <input value={form.projectImage} onChange={(e) => setForm({ ...form, projectImage: e.target.value })} placeholder="Paste image URL (https://...)" {...bind('projectImage')} />
+                {renderError('projectImage')}
+              </>
             ) : (
               <label className="file-upload-zone">
                 <input type="file" accept="image/*" onChange={handleFileUpload} />
@@ -325,6 +436,7 @@ function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { on
   },
   body: JSON.stringify({
     projectName: form.projectName,
+    customer: form.customer.trim() || null,
     city: form.city || null,
     country: form.country || null,
     segment: form.segment,
