@@ -17,9 +17,10 @@ const submittals: Submittal[] = [
 const groups = ['HSE & Safety Plans', 'Risk Assessments & Method Statements (RAMS)', 'Inspection Test Plan (ITP)', 'Permits & Certificates'];
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard }, { label: 'Submittals', icon: FileText, active: true },
+  { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert }, 
   // { label: 'Checklist Stats', icon: FileCheck2 }, 
-  { label: 'Company Checklists', icon: FolderKanban },
+  { label: 'Checklist', icon: FolderKanban },
   // { label: 'Testing Workflow', icon: TestTube2 },
    { label: 'Milestones', icon: ShieldCheck }, { label: 'Reports', icon: FileText },
   { label: 'Personas', icon: Users }, { label: 'Assets & Equipment', icon: Wrench }, { label: 'Change Log', icon: History },

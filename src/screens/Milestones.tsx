@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bell, CalendarDays, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
+import { Bell, CalendarDays, ChevronRight, Download, FileText, Filter, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Plus, Search, Settings2, ShieldCheck, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
 import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type MilestoneStatus = 'Done' | 'In Progress' | 'At Risk' | 'Not Started';
@@ -57,9 +57,10 @@ const phases: Phase[] = [
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
+    { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: Flag },
   // { label: 'Checklist Stats', icon: FileText },
-  { label: 'Company Checklists', icon: FolderKanban },
+  { label: 'Checklist', icon: FolderKanban },
   // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag, active: true },
   { label: 'Reports', icon: FileText },

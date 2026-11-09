@@ -1,6 +1,7 @@
 export type MainNavigationTarget =
   | 'dashboard'
   | 'submittals'
+  | 'hse'
   | 'issues'
   | 'checklist'
   | 'company'
@@ -14,9 +15,10 @@ export type MainNavigationTarget =
 const navigationTargets: Record<string, MainNavigationTarget> = {
   Dashboard: 'dashboard',
   Submittals: 'submittals',
+  HSE: 'hse',
   Issues: 'issues',
   'Checklist Stats': 'checklist',
-  'Company Checklists': 'company',
+  Checklist: 'company',
   // 'Testing Workflow': 'testing',
   Milestones: 'milestones',
   Reports: 'reports',

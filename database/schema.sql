@@ -11,7 +11,6 @@
 --     first_name VARCHAR(100) NOT NULL,
 --     last_name VARCHAR(100) NOT NULL,
 --     email VARCHAR(255) NOT NULL UNIQUE,
---     password_hash VARCHAR(255),
 --     title VARCHAR(100),
 --     role user_role NOT NULL,
 --     company VARCHAR(255)

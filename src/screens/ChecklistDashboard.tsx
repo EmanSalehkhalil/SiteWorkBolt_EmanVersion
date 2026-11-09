@@ -1,4 +1,4 @@
-import { Bell, Building2, CircleCheck as CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Clock3, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
+import { Bell, Building2, CircleCheck as CheckCircle2, ChevronRight, CircleAlert, ClipboardCheck, Clock3, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Search, Settings2, ShieldCheck, SlidersHorizontal, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
 import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type Company = { name: string; tasks: string; verified: string; progress: number; status: 'On Track' | 'Delayed' | 'Ahead' };
@@ -11,12 +11,13 @@ const companies: Company[] = [
   { name: 'Johnson Controls', tasks: '450', verified: '120', progress: 26, status: 'Delayed' },
 ];
 
-const navItems = [
+const navItems: { label: string; icon: typeof LayoutDashboard; active?: boolean }[] = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
+    { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert },
   // { label: 'Checklist Stats', icon: ClipboardCheck, active: true },
-  { label: 'Company Checklists', icon: FolderKanban },
+  { label: 'Checklist', icon: FolderKanban },
   // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },

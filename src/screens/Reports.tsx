@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Activity, Bell, CalendarDays, Check, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, FileText, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Printer, Search, Settings2, Share2, SlidersHorizontal, TestTube as TestTube2, TrendingUp, Users, Wrench, X } from 'lucide-react';
+import { Activity, Bell, CalendarDays, Check, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, Download, ChartBar as FileBarChart, FileText, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Printer, Search, Settings2, Share2, ShieldCheck, SlidersHorizontal, TestTube as TestTube2, TrendingUp, Users, Wrench, X } from 'lucide-react';
 import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type ReportRow = { id: string; subject: string; company: string; priority: 'High' | 'Critical' | 'Medium' | 'Low'; status: string; date: string };
@@ -18,9 +18,10 @@ const rows: ReportRow[] = [
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
+    { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert },
   // { label: 'Checklist Stats', icon: ClipboardCheck },
-  { label: 'Company Checklists', icon: FolderKanban },
+  { label: 'Checklist', icon: FolderKanban },
   // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart, active: true },

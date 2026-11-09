@@ -4,9 +4,10 @@ import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, active: true },
   { label: 'Submittals', icon: FileText },
+    { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert },
   // { label: 'Checklist Stats', icon: ClipboardCheck },
-  { label: 'Company Checklists', icon: FolderKanban },
+  { label: 'Checklist', icon: FolderKanban },
   // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
@@ -21,7 +22,23 @@ const issueCards = [
   { label: 'SAFETY ISSUES (HSE)', total: '5', resolved: '1', rate: '20.0%', change: '+1', color: 'green' },
 ];
 
-function Dashboard({ onBackToProjects, onNavigate, onSignOut }: { onBackToProjects: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
+function Dashboard({ projectId, onBackToProjects, onNavigate, onSignOut }: { projectId: string | null; onBackToProjects: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
+  const [personnel, setPersonnel] = useState<{ name: string; members: { role: string; isActive: boolean }[] } | null>(null);
+  const [personnelError, setPersonnelError] = useState('');
+  useEffect(() => {
+    let cancelled = false;
+    setPersonnel(null); setPersonnelError('');
+    if (!projectId) { setPersonnelError('Select a project to view personnel.'); return; }
+    fetch(`http://localhost:4000/projects/${encodeURIComponent(projectId)}`)
+      .then(async (r) => { const body = await r.json(); if (!r.ok) throw new Error(body.error || 'Unable to load personnel.'); return body; })
+      .then((p) => { if (!cancelled) setPersonnel({ name: p.projectName, members: p.members }); })
+      .catch((error) => { if (!cancelled) setPersonnelError(error instanceof Error ? error.message : 'Unable to load personnel.'); });
+    return () => { cancelled = true; };
+  }, [projectId]);
+  const active = personnel?.members.filter((m) => m.isActive) || [];
+  const agents = active.filter((m) => m.role === 'commissioning agent').length;
+  const engineers = active.filter((m) => m.role === 'engineer').length;
+  const other = active.length - agents - engineers;
   return (
     <div className="project-dashboard-screen">
       <aside className="project-dashboard-sidebar">
@@ -36,7 +53,7 @@ function Dashboard({ onBackToProjects, onNavigate, onSignOut }: { onBackToProjec
       <div className="project-dashboard-main">
         <header className="project-dashboard-topbar">
           <button className="project-dashboard-menu" aria-label="Open navigation"><Menu size={19} /></button>
-          <button className="project-dashboard-crumb" onClick={onBackToProjects}><span><FolderKanban size={13} /> Data Center Alpha</span><b>›</b><strong>Phase 2</strong></button>
+          <button className="project-dashboard-crumb" onClick={onBackToProjects}><span><FolderKanban size={13} /> {personnel?.name || 'Project'}</span></button>
           <label className="project-dashboard-search"><Search size={14} /><input placeholder="Search site data..." /></label>
           <div className="project-dashboard-user"><button className="project-dashboard-bell" aria-label="Notifications"><Bell size={17} /><i /></button><span className="project-user-divider" /><span className="project-user-copy"><strong>Alex Construction</strong><small>Project Manager</small></span><span className="project-user-avatar">AC</span></div>
         </header>
@@ -53,7 +70,12 @@ function Dashboard({ onBackToProjects, onNavigate, onSignOut }: { onBackToProjec
 
           <section className="project-main-grid">
             <div className="project-panel checklist-panel"><div className="project-panel-heading"><div><h2>Project Checklist Progress</h2><p>Overall completion across all commissioning levels</p></div><strong>53% Completed</strong></div><div className="checklist-progress-body"><div className="checklist-donut"><span>53%<small>TOTAL DONE</small></span></div><div className="checklist-stages"><div><span>Delivered</span><b>420 Items</b><i><em style={{ width: '82%' }} /></i></div><div><span>Commissioned</span><b>150 Items</b><i><em style={{ width: '47%' }} /></i></div><div><span>Installed</span><b>230 Items</b><i><em style={{ width: '63%' }} /></i></div><div><span>Energized</span><b>85 Items</b><i><em style={{ width: '29%' }} /></i></div><small className="last-synced"><Activity size={11} /> LAST SYNCHRONIZED: 14 MINS AGO</small></div></div></div>
-            <div className="project-panel personnel-panel"><div className="project-panel-heading personnel-heading"><div><h2><Users size={16} /> Personnel Onsite</h2><p>Current workforce deployment</p></div></div><div className="headcount"><strong>142</strong><small>TOTAL HEADCOUNT</small></div><div className="personnel-list"><div><Wrench size={13} /><span>Technicians</span><b>85</b></div><div><Zap size={13} /><span>Engineers</span><b>42</b></div><div><ShieldCheck size={13} /><span>Supervisors</span><b>15</b></div></div><div className="personnel-bar"><i /><i /><i /></div><div className="personnel-labels"><span>OPS 60%</span><span>ENG 30%</span><span>MGT 10%</span></div></div>
+            <div className="project-panel personnel-panel"><div className="project-panel-heading personnel-heading"><div><h2><Users size={16} /> Project Personnel</h2><p>Active memberships in this project</p></div></div>
+              {personnelError ? <p role="alert">{personnelError}</p> : !personnel ? <p>Loading personnel…</p> : <>
+                <div className="headcount"><strong>{active.length}</strong><small>ACTIVE HEADCOUNT</small></div>
+                <div className="personnel-list"><div><Wrench size={13} /><span>Commissioning agents</span><b>{agents}</b></div><div><Zap size={13} /><span>Engineers</span><b>{engineers}</b></div><div><ShieldCheck size={13} /><span>Managers / other roles</span><b>{other}</b></div></div>
+              </>}
+            </div>
           </section>
 
           <section className="issues-section"><div className="issues-heading"><div><h2>Construction Issues Breakdown</h2><p>Workflow distribution and corrective action status</p></div><div><strong>84.2%</strong><span>GLOBAL RESOLUTION RATE</span></div><button>View All Issues ›</button></div><div className="issue-card-grid">{issueCards.map((issue) => <article className={`issue-card issue-${issue.color}`} key={issue.label}><div className="issue-card-top"><small>{issue.label}</small><em>{issue.rate} Resolved</em></div><div className="issue-total"><strong>{issue.total}</strong><span>↗ {issue.change}</span></div><small className="issue-caption">TOTAL ISSUES</small><div className="issue-resolved"><span>Resolved This Week</span><b>{issue.resolved}</b></div><div className="issue-sparkline"><i /><i /><i /><i /><i /></div></article>)}</div></section>
@@ -65,3 +87,4 @@ function Dashboard({ onBackToProjects, onNavigate, onSignOut }: { onBackToProjec
 }
 
 export default Dashboard;
+import { useEffect, useState } from 'react';

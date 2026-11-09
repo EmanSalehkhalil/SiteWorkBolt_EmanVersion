@@ -1,70 +1,30 @@
-import { useState } from 'react';
-import { Bell, Check, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MessageSquare, Paperclip, RefreshCw, Search, Settings2, TestTube as TestTube2, Users, Wrench } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Search, Settings2, ShieldCheck, Users, Wrench } from 'lucide-react';
 import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
+import ChecklistAnswer, { type ChecklistAnswerValue } from '@/components/ChecklistAnswer';
+import ChecklistActivity from '@/components/ChecklistActivity';
 
-type Phase = { level: string; title: string; status: string; active?: boolean; complete?: boolean };
-type Task = { text: string; meta: string; result: 'PASSED' | 'FAILED' | 'N/A'; issue?: boolean };
+type Phase = { level: string; title: string };
+type ChecklistItem = { checklistId: string; checklistText: string | null; checklistAnswerType: string };
+type ChecklistSubsection = { subsectionId: string; subsectionNumber: number; subsectionName: string; items: ChecklistItem[] };
+type ChecklistSection = { sectionId: string; sectionNumber: number; sectionName: string; subsections: ChecklistSubsection[] };
+type ChecklistEquipment = { projectEquipmentId: string; equipmentId: string; equipmentName: string | null; sections: ChecklistSection[] };
 
 const phases: Phase[] = [
-  { level: 'L1', title: 'Factory Acceptance', status: 'Completed', complete: true },
-  { level: 'L2', title: 'Delivery & Installation', status: 'In Progress', active: true },
-  { level: 'L3', title: 'Pre-Functional / Commissioning', status: 'Not Started' },
-  { level: 'L4', title: 'Functional Performance', status: 'Not Started' },
-  { level: 'L5', title: 'IST (Integrated Testing)', status: 'Not Started' },
-];
-
-const deliveryTasks: Task[] = [
-  {
-    text: '2.1 Equipment ratings match referenced design drawings and specification requirements.',
-    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
-    result: 'PASSED'
-  },
-  {
-    text: '2.2 Confirm there is no visual damage to equipment enclosure.',
-    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
-    result: 'PASSED'
-  },
-  {
-    text: '2.3 Confirm there is no sign of water inside the enclosure and no visible rust.',
-    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
-    result: 'PASSED'
-  },
-  {
-    text: "2.4 Confirm the accessories listed in the manufacturer's submittal have been delivered as specified.",
-    meta: '0 response changes   0 attachments   0 photos   0 comments   0 observations',
-    result: 'PASSED'
-  }
-];
-
-const installationTasks: Task[] = [
-  {
-    text: 'Pre-requisite Checks :: Confirm all factory defects and shortages fixed and complete',
-    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
-    result: 'N/A'
-  },
-  {
-    text: 'Associated Documentation :: SCCS (Short Circuit and Coordination Study) Revision Date',
-    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
-    result:'PASSED'
-  },
-  {
-    text: 'Visual Inspection :: Confirm name plate data matches one-line drawings',
-    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
-    result:'FAILED'
-  },
-  {
-    text: 'Visual Inspection :: Confirm the equipment is mounted in its final location per the shop drawings and instructions.',
-    meta: '0 Response Changes   0 Attachments   0 Photos   0 Comments   0 Observations',
-    result: 'N/A'
-  }
+  { level: 'L1', title: 'Factory Acceptance' },
+  { level: 'L2', title: 'Delivery & Installation' },
+  { level: 'L3', title: 'Pre-Functional / Commissioning' },
+  { level: 'L4', title: 'Functional Performance' },
+  { level: 'L5', title: 'IST (Integrated Testing)' },
 ];
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
+    { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert },
   // { label: 'Checklist Stats', icon: ClipboardCheck },
-  { label: 'Company Checklists', icon: FolderKanban, active: true },
+  { label: 'Checklist', icon: FolderKanban, active: true },
   // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
@@ -73,17 +33,39 @@ const navItems = [
   { label: 'Change Log', icon: History },
 ];
 
-function ResultButtons({ task }: { task: Task }) {
-  return <div className="company-result-buttons"><button className={task.result === 'PASSED' ? 'selected-pass' : ''}><Check size={10} /> PASSED</button><button className={task.result === 'FAILED' ? 'selected-fail' : ''}>FAILED</button><button className={task.result === 'N/A' ? 'selected-na' : ''}>N/A</button></div>;
-}
-
-function TaskRow({ task }: { task: Task }) {
-  return <div className="company-task-row"><div><strong>{task.text}</strong><small><RefreshCw size={10} /> {task.meta.split('   ')[0]} <MessageSquare size={10} /> {task.meta.split('   ')[1]} <Paperclip size={10} /> {task.meta.split('   ')[2]}</small>{task.issue && <em className="linked-issue"><CircleAlert size={10} /> 1 linked issue</em>}</div><ResultButtons task={task} /></div>;
-}
-
-function CompanyChecklists({ onBackToProject, onNavigate, onSignOut }: { onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
-  const [selectedPhase, setSelectedPhase] = useState('L2');
+function CompanyChecklists({ projectId, onBackToProject, onNavigate, onSignOut }: { projectId: string | null; onBackToProject: () => void; onNavigate: (destination: MainNavigationTarget) => void; onSignOut: () => void }) {
+  const [selectedPhase, setSelectedPhase] = useState('L1');
   const [expanded, setExpanded] = useState(true);
+  const [equipment, setEquipment] = useState<ChecklistEquipment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [answers, setAnswers] = useState<Record<string, ChecklistAnswerValue>>({});
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setEquipment([]);
+    setLoadError('');
+    if (!projectId) {
+      setLoading(false);
+      setLoadError('Select a project to view its checklists.');
+      return () => controller.abort();
+    }
+    setLoading(true);
+    fetch(`http://localhost:4000/projects/${encodeURIComponent(projectId)}/checklists?phase=${selectedPhase}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Unable to load checklists (${response.status}).`);
+        return response.json() as Promise<{ data: ChecklistEquipment[] }>;
+      })
+      .then((result) => { if (!controller.signal.aborted) setEquipment(result.data); })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) setLoadError(error instanceof Error ? error.message : 'Unable to load checklists.');
+      })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [projectId, selectedPhase]);
+
+  const itemCount = equipment.reduce((total, entry) => total + entry.sections.reduce(
+    (sectionTotal, section) => sectionTotal + section.subsections.reduce((subTotal, sub) => subTotal + sub.items.length, 0), 0), 0);
 
   return <div className="company-checklist-screen">
     <aside className="company-checklist-sidebar">
@@ -94,19 +76,41 @@ function CompanyChecklists({ onBackToProject, onNavigate, onSignOut }: { onBackT
     </aside>
 
     <div className="company-checklist-main">
-      <header className="company-checklist-topbar"><button className="company-mobile-menu" aria-label="Open navigation"><Menu size={18} /></button><button className="company-project-crumb" onClick={onBackToProject}><FolderKanban size={13} /> Data Center Alpha <ChevronRight size={13} /></button><label className="company-search"><Search size={14} /><input placeholder="Search site data..." /></label><div className="company-user"><button aria-label="Notifications"><Bell size={17} /><i /></button><span className="company-divider" /><span><strong>Marcus Thorne</strong><small>Project Manager</small></span><b>MT</b></div></header>
+      <header className="company-checklist-topbar"><button className="company-mobile-menu" aria-label="Open navigation"><Menu size={18} /></button><button className="company-project-crumb" onClick={onBackToProject}><FolderKanban size={13} /> Project {projectId} <ChevronRight size={13} /></button><label className="company-search"><Search size={14} /><input placeholder="Search site data..." /></label><div className="company-user"><button aria-label="Notifications"><Bell size={17} /><i /></button><span className="company-divider" /><span><strong>Marcus Thorne</strong><small>Project Manager</small></span><b>MT</b></div></header>
 
       <main className="company-checklist-content">
-        <div className="company-checklist-title"><div><div className="company-kicker"><button onClick={onBackToProject}><ChevronLeft size={14} /></button> Subcontractor <span>REF: DC-ALPHA-SE-092</span></div><h1>Schneider Electric: Commissioning Checklist</h1></div><div className="company-title-actions"><button><Settings2 size={13} /> Filters</button><button className="company-report-button"><Download size={13} /> Export L1-L5 Report</button></div></div>
+        <div className="company-checklist-title"><div><div className="company-kicker"><button onClick={onBackToProject}><ChevronLeft size={14} /></button> Project Checklist</div><h1>Commissioning Checklist</h1></div><div className="company-title-actions"><button><Settings2 size={13} /> Filters</button><button className="company-report-button"><Download size={13} /> Export L1-L5 Report</button></div></div>
 
-        <section className="company-summary-grid"><div><span className="summary-icon blue"><ClipboardCheck size={15} /></span><small>OVERALL PROGRESS</small><strong>64% <em>64%</em></strong><i><b /></i></div><div><span className="summary-icon green"><Check size={15} /></span><small>PASSED TASKS</small><strong>142</strong></div><div><span className="summary-icon red"><CircleAlert size={15} /></span><small>FAILED / ISSUES</small><strong>12</strong></div><div><span className="summary-icon orange"><RefreshCw size={15} /></span><small>PENDING REVIEW</small><strong>28</strong></div></section>
+        <section className="company-summary-grid"><div><span className="summary-icon blue"><ClipboardCheck size={15} /></span><small>{selectedPhase} CHECKLIST ITEMS</small><strong>{itemCount}</strong></div></section>
 
-        <section className="company-filter-bar"><label>ASSIGNED TO<select><option>All Field Engineers</option></select></label><label>EQUIPMENT<select><option>MasterPact MTZ2 Br...</option></select></label><label>STATUS<select><option>All Statuses</option></select></label><label>TYPE<select><option>Level-2 QA/QC</option></select></label><label>DISCIPLINE<select><option>Electrical</option></select></label><label>PHASE<select><option>Delivery & Installation</option></select></label><button aria-label="Add filter">+</button></section>
+        <nav className="company-phase-tabs">{phases.map((phase) => <button className={selectedPhase === phase.level ? 'active' : ''} aria-pressed={selectedPhase === phase.level} key={phase.level} onClick={() => setSelectedPhase(phase.level)}><span>{phase.level}</span><strong>{phase.title}</strong></button>)}</nav>
+        <p role="note">Answers are unsaved drafts only. They are not submitted and will be lost when you leave this screen or refresh.</p>
 
-        <nav className="company-phase-tabs">{phases.map((phase) => <button className={`${phase.active ? 'active' : ''} ${phase.complete ? 'complete' : ''}`} key={phase.level} onClick={() => setSelectedPhase(phase.level)}><span>{phase.level} <em>{phase.status}</em></span><strong>{phase.title}</strong></button>)}</nav>
-
-        <div className="company-equipment-heading"><div><h2>Equipment List for {selectedPhase} <span>1</span></h2></div><button onClick={() => setExpanded(!expanded)}>{expanded ? 'Collapse products' : 'Expand products'} <ChevronDown size={13} /></button></div>
-        {expanded && <section className="equipment-card"><div className="equipment-header"><div><h3>LV Switchgear<span>Main Distribution</span></h3><p>Low voltage circuit breaker for main distribution switchgear. SN: SE-ACB-901-22</p></div><div className="equipment-progress"><small>AVAILABLE IN: <b>L1</b> <b>L2</b> <b>L3</b></small><span><i /><strong>1/3 Completed</strong><ChevronDown size={12} /></span></div></div><div className="checklist-group"><div className="checklist-group-heading"><Wrench size={14} /><div><strong>DELIVERY</strong><small>Verify equipment arrival and physical condition</small></div><ChevronDown size={13} /></div>{deliveryTasks.map((task) => <TaskRow key={task.text} task={task} />)}</div><div className="checklist-group"><div className="checklist-group-heading"><ClipboardCheck size={14} /><div><strong>INSTALLATION / VERIFICATION</strong><small>Confirm proper positioning and structural mounting</small></div><ChevronDown size={13} /></div>{installationTasks.map((task) => <TaskRow key={task.text} task={task} />)}<button className="secondary-support"><span /> TBD: Secondary Support Verification <ChevronDown size={12} /></button></div><button className="add-inspection"><span>+</span> Add Custom Inspection Point</button></section>}
+        <div className="company-equipment-heading"><div><h2>Equipment List for {selectedPhase} <span>{equipment.length}</span></h2></div><button onClick={() => setExpanded(!expanded)}>{expanded ? 'Collapse products' : 'Expand products'} <ChevronDown size={13} /></button></div>
+        {loading && <p role="status">Loading {selectedPhase} checklists...</p>}
+        {loadError && <p role="alert">{loadError}</p>}
+        {!loading && !loadError && equipment.length === 0 && <p>No checklist items are configured for this project's equipment in {selectedPhase}.</p>}
+        {expanded && !loading && !loadError && equipment.map((entry) => <section className="equipment-card" key={entry.projectEquipmentId}>
+          <div className="equipment-header"><div><h3>{entry.equipmentName || `Equipment ${entry.equipmentId}`}</h3></div></div>
+          {entry.sections.map((section) => <div className="checklist-group" key={section.sectionId}>
+            <div className="checklist-group-heading"><ClipboardCheck size={14} /><div><strong>{section.sectionNumber}. {section.sectionName}</strong></div></div>
+            {section.subsections.map((subsection) => <div key={subsection.subsectionId}>
+              <h4>{section.sectionNumber}.{subsection.subsectionNumber} {subsection.subsectionName}</h4>
+              {subsection.items.map((item) => {
+                const answerKey = `${projectId}:${entry.projectEquipmentId}:${selectedPhase}:${item.checklistId}`;
+                return <div key={item.checklistId}>
+                  <div className="company-task-row">
+                  <div className="checklist-item-copy"><strong>{item.checklistText}</strong><small>Response type: {item.checklistAnswerType}</small></div>
+                  <ChecklistAnswer answerType={item.checklistAnswerType}
+                    value={answers[answerKey] || { text: '', photo: null }}
+                    onChange={(value) => setAnswers((current) => ({ ...current, [answerKey]: value }))} />
+                  </div>
+                  {projectId && <ChecklistActivity projectId={projectId} projectEquipmentId={entry.projectEquipmentId} checklistId={item.checklistId} />}
+                </div>;
+              })}
+            </div>)}
+          </div>)}
+        </section>)}
       </main>
       <footer className="company-checklist-footer"><span>© 2024 SiteSphere Construction Systems. All rights reserved.</span><div><a>Documentation</a><a>Support</a><a>Privacy Policy</a></div></footer>
     </div>

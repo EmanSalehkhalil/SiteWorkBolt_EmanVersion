@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Bell, Building2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Clock3, EllipsisVertical, ExternalLink, Grid2x2X as Grid2X2, ImagePlus, LayoutList, Link2, MapPin, Plus, Search, Settings2, TrendingUp, Upload, Users, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Bell, Building2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Clock3, Pencil, ExternalLink, Grid2x2X as Grid2X2, ImagePlus, LayoutList, Link2, MapPin, Plus, Search, Settings2, TrendingUp, Upload, Users, X } from 'lucide-react';
 
 type ApiProject = {
   projectId: string;
@@ -12,6 +12,17 @@ type ApiProject = {
   country: string | null;
   numberOfIssues: number;
   numberOfTestsPending: number;
+  customer: string | null;
+  customerReference: string | null;
+  segment: string | null;
+  networkNumber: string | null;
+  opportunityNumber: string | null;
+  workingDaysPerWeek: number;
+  workingHoursPerDay: number;
+  personnelCount: number;
+  siteManager?: PersonInput | null;
+  qualityManager?: PersonInput | null;
+  commissioningTeam?: PersonInput[];
 };
 
 type ApiResponse = {
@@ -50,28 +61,32 @@ function buildLocation(city: string | null, country: string | null): string {
   return 'Location not set';
 }
 
-function ProjectCard({ project, onOpenDashboard }: { project: Project; onOpenDashboard: () => void }) {
+function ProjectCard({ project, onOpenDashboard, onEdit }: { project: Project; onOpenDashboard: (projectId: string) => void; onEdit: (projectId: string) => void }) {
   return (
     <article className={`project-card ${project.archived ? 'archived-card' : ''}`}>
       <div className="project-image-wrap">
         <img src={project.image} alt="" className="project-image" />
       </div>
       <div className="project-body">
-        <div className="project-heading"><div><h3>{project.name}</h3><p><MapPin size={11} /> {project.location}</p></div><button className="icon-button" aria-label={`More options for ${project.name}`}><EllipsisVertical size={16} /></button></div>
+        <div className="project-heading"><div><h3>{project.name}</h3><p><MapPin size={11} /> {project.location}</p></div><button type="button" className="project-edit-button" onClick={() => onEdit(project.id)} aria-label={`Edit ${project.name}`}><Pencil size={13} /> Edit</button></div>
         <div className="project-date-row"><div><small>START DATE</small><span>{project.startDate}</span></div><div><small>END DATE</small><span>{project.endDate}</span></div></div>
         <div className="metric-row">
           <div><small>OPEN ISSUES</small><span className={project.issues > 10 ? 'metric-danger' : 'metric-warning'}><CircleAlert size={12} /> {project.issues}</span></div>
           <div><small>TESTS PENDING</small><span className="metric-blue"><Clock3 size={12} /> {project.tests}</span></div>
         </div>
-        <button className={`dashboard-button ${project.archived ? 'archive-button' : ''}`} onClick={project.archived ? undefined : onOpenDashboard}>{project.archived ? 'View Archive' : 'Open Dashboard'} <ExternalLink size={13} /></button>
+        <button className={`dashboard-button ${project.archived ? 'archive-button' : ''}`} onClick={project.archived ? undefined : () => onOpenDashboard(project.id)}>{project.archived ? 'View Archive' : 'Open Dashboard'} <ExternalLink size={13} /></button>
       </div>
     </article>
   );
 }
 
+type PersonInput = { email: string; firstName: string; lastName: string };
+const emptyPerson = (): PersonInput => ({ email: '', firstName: '', lastName: '' });
+
 type NewProjectForm = {
   projectName: string;
   customer: string;
+  customerReference: string;
   city: string;
   country: string;
   segment: string;
@@ -79,19 +94,18 @@ type NewProjectForm = {
   endDate: string;
   networkNumber: string;
   opportunityNumber: string;
-  siteManager: string;
-  qualityManager: string;
-  commissioningTeam: string[];
+  siteManager: PersonInput;
+  qualityManager: PersonInput;
+  commissioningTeam: PersonInput[];
   workingDaysPerWeek: string;
   workingHoursPerDay: string;
-  numberOfIssues: string;
-  numberOfTestsPending: string;
   projectImage: string;
 };
 
 const emptyForm: NewProjectForm = {
   projectName: '',
   customer: '',
+  customerReference: '',
   city: '',
   country: '',
   segment: '',
@@ -99,13 +113,11 @@ const emptyForm: NewProjectForm = {
   endDate: '',
   networkNumber: '',
   opportunityNumber: '',
-  siteManager: '',
-  qualityManager: '',
-  commissioningTeam: [''],
+  siteManager: emptyPerson(),
+  qualityManager: emptyPerson(),
+  commissioningTeam: [],
   workingDaysPerWeek: '',
   workingHoursPerDay: '',
-  numberOfIssues: '0',
-  numberOfTestsPending: '0',
   projectImage: '',
 };
 
@@ -144,16 +156,45 @@ function validateForm(form: NewProjectForm): Record<string, string> {
   check('endDate', requiredError(form.endDate));
   check('networkNumber', requiredError(form.networkNumber));
   check('opportunityNumber', requiredError(form.opportunityNumber));
-  check('siteManager', emailError(form.siteManager));
-  check('qualityManager', emailError(form.qualityManager));
-  form.commissioningTeam.forEach((email, i) => check(`commissioningTeam-${i}`, emailError(email)));
+  if (form.siteManager.email) check('siteManager', emailError(form.siteManager.email));
+  if (form.qualityManager.email) check('qualityManager', emailError(form.qualityManager.email));
+  form.commissioningTeam.forEach((person, i) => check(`commissioningTeam-${i}`, emailError(person.email)));
+  const emails = [form.siteManager.email, form.qualityManager.email, ...form.commissioningTeam.map((person) => person.email)]
+    .map((email) => email.trim().toLowerCase()).filter(Boolean);
+  if (new Set(emails).size !== emails.length) errors.siteManager = 'Use each email only once across personnel slots.';
+  if (form.startDate && form.endDate && form.endDate < form.startDate) errors.endDate = 'End date must not precede start date.';
   check('workingDaysPerWeek', requiredError(form.workingDaysPerWeek));
   check('workingHoursPerDay', requiredError(form.workingHoursPerDay));
   check('projectImage', imageUrlError(form.projectImage));
   return errors;
 }
 
-function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: () => void; onSubmit: (form: NewProjectForm) => Promise<void> }) {
+function PersonFields({ person, onChange, label }: { person: PersonInput; onChange: (person: PersonInput) => void; label: string }) {
+  const [lookup, setLookup] = useState('');
+  const currentEmail = useRef(person.email);
+  currentEmail.current = person.email;
+  async function findIdentity() {
+    if (!EMAIL_PATTERN.test(person.email.trim())) return;
+    const email = person.email;
+    try {
+      const response = await fetch(`http://localhost:4000/users/identities?email=${encodeURIComponent(email.trim())}`);
+      if (!response.ok) throw new Error('Lookup unavailable; names required only if this is a new identity.');
+      const known: PersonInput | null = await response.json();
+      if (currentEmail.current !== email) return;
+      setLookup(known ? `Known identity: ${known.firstName} ${known.lastName}. Names need not be entered.` : 'New identity: enter both first and last name.');
+    } catch (error) { if (currentEmail.current === email) setLookup(error instanceof Error ? error.message : 'Lookup unavailable.'); }
+  }
+  return <div className="modal-field">
+    <input type="email" value={person.email} onChange={(e) => { setLookup(''); onChange({ ...person, email: e.target.value }); }} onBlur={findIdentity} aria-label={`${label} email`} placeholder="Email (blank for none)" />
+    <div className="modal-field-row">
+      <input value={person.firstName} onChange={(e) => onChange({ ...person, firstName: e.target.value })} aria-label={`${label} first name`} placeholder="First name (new identity)" maxLength={100} />
+      <input value={person.lastName} onChange={(e) => onChange({ ...person, lastName: e.target.value })} aria-label={`${label} last name`} placeholder="Last name (new identity)" maxLength={100} />
+    </div>
+    <small className="modal-field-hint">{lookup || 'Existing identities are reused by email; their names are not overwritten.'}</small>
+  </div>;
+}
+
+function NewProjectModal({ open, initial, onClose, onSubmit }: { open: boolean; initial: NewProjectForm | null; onClose: () => void; onSubmit: (form: NewProjectForm) => Promise<void> }) {
   const [form, setForm] = useState<NewProjectForm>(emptyForm);
   const [imageMode, setImageMode] = useState<'link' | 'upload'>('link');
   const [submitting, setSubmitting] = useState(false);
@@ -172,11 +213,11 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
   });
   const renderError = (key: string) => { const m = showError(key); return m ? <small className="modal-field-error" role="alert">{m}</small> : null; };
 
-  function updateTeamEmail(index: number, value: string) {
+  function updateTeamEmail(index: number, value: PersonInput) {
     setForm((f) => ({ ...f, commissioningTeam: f.commissioningTeam.map((m, i) => (i === index ? value : m)) }));
   }
   function addTeamEmail() {
-    setForm((f) => ({ ...f, commissioningTeam: [...f.commissioningTeam, ''] }));
+    setForm((f) => ({ ...f, commissioningTeam: [...f.commissioningTeam, emptyPerson()] }));
   }
   function removeTeamEmail(index: number) {
     setForm((f) => ({ ...f, commissioningTeam: f.commissioningTeam.filter((_, i) => i !== index) }));
@@ -189,13 +230,13 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
 
   useEffect(() => {
     if (open) {
-      setForm(emptyForm);
+      setForm(initial || emptyForm);
       setImageMode('link');
       setSubmitError(null);
       setTouched({});
       setSubmitted(false);
     }
-  }, [open]);
+  }, [open, initial]);
 
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -214,7 +255,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
     if (Object.keys(errors).length > 0) return;
     setSubmitting(true);
     try {
-      await onSubmit({ ...form, commissioningTeam: form.commissioningTeam.map((m) => m.trim()) });
+      await onSubmit(form);
       onClose();
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Failed to create project');
@@ -229,7 +270,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
     <div className="modal-overlay" onClick={onClose}>
       <div className="new-project-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Create New Project</h2>
+          <h2>{initial ? 'Edit Project' : 'Create New Project'}</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close"><X size={18} /></button>
         </div>
         <form className="modal-form" onSubmit={handleSubmit} noValidate>
@@ -242,6 +283,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
             <span>Customer</span>
             <input value={form.customer} onChange={(e) => setForm({ ...form, customer: e.target.value })} placeholder="Enter customer name" />
           </label>
+          <label className="modal-field"><span>Customer Reference</span><input value={form.customerReference} onChange={(e) => setForm({ ...form, customerReference: e.target.value })} /></label>
           <div className="modal-field-row">
             <label className="modal-field">
               <span>City</span>
@@ -289,26 +331,26 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
             </label>
           </div>
           <div className="modal-field-row">
-            <label className="modal-field">
+            <div className="modal-field">
               <span>Site Manager</span>
-              <input type="email" value={form.siteManager} onChange={(e) => setForm({ ...form, siteManager: e.target.value })} placeholder="Enter site manager email" {...bind('siteManager')} />
+              <PersonFields label="Site manager" person={form.siteManager} onChange={(siteManager) => setForm({ ...form, siteManager })} />
               {renderError('siteManager')}
-            </label>
-            <label className="modal-field">
+            </div>
+            <div className="modal-field">
               <span>Quality Manager</span>
-              <input type="email" value={form.qualityManager} onChange={(e) => setForm({ ...form, qualityManager: e.target.value })} placeholder="Enter quality manager email" {...bind('qualityManager')} />
+              <PersonFields label="Quality manager" person={form.qualityManager} onChange={(qualityManager) => setForm({ ...form, qualityManager })} />
               {renderError('qualityManager')}
-            </label>
+            </div>
           </div>
           <div className="modal-field">
             <span>Commissioning Team</span>
-            {form.commissioningTeam.map((email, i) => {
+            {form.commissioningTeam.map((person, i) => {
               const key = `commissioningTeam-${i}`;
               return (
                 <div className="team-email-item" key={i}>
                   <div className="team-email-row">
-                    <input type="email" value={email} onChange={(e) => updateTeamEmail(i, e.target.value)} placeholder="Enter team member email" aria-label={`Commissioning team member ${i + 1} email`} {...bind(key)} />
-                    {form.commissioningTeam.length > 1 && (
+                    <PersonFields label={`Commissioning team member ${i + 1}`} person={person} onChange={(value) => updateTeamEmail(i, value)} />
+                    {(
                       <button type="button" className="team-email-remove" onClick={() => removeTeamEmail(i)} aria-label={`Remove team member ${i + 1}`}><X size={14} /></button>
                     )}
                   </div>
@@ -317,7 +359,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
               );
             })}
             <button type="button" className="team-email-add" onClick={addTeamEmail}><Plus size={13} /> Add another email</button>
-            <small className="modal-field-hint">Multiple commissioning team members can be assigned to the same project.</small>
+            <small className="modal-field-hint">Removing personnel deactivates their membership; timesheet history is kept. Conflicting existing roles are rejected, never silently overwritten.</small>
           </div>
           <div className="modal-field">
             <span>Project Working Schedule</span>
@@ -367,7 +409,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
           {submitError && <div className="modal-error">{submitError}</div>}
           <div className="modal-actions">
             <button type="button" className="modal-cancel" onClick={onClose} disabled={submitting}>Cancel</button>
-            <button type="submit" className="modal-submit" disabled={submitting}>{submitting ? 'Creating…' : 'Create Project'}</button>
+            <button type="submit" className="modal-submit" disabled={submitting}>{submitting ? 'Saving…' : initial ? 'Save Changes' : 'Create Project'}</button>
           </div>
         </form>
       </div>
@@ -375,7 +417,7 @@ function NewProjectModal({ open, onClose, onSubmit }: { open: boolean; onClose: 
   );
 }
 
-function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { onSignOut: () => void; onOpenDashboard: () => void; onOpenPortfolioDashboard: () => void }) {
+function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { onSignOut: () => void; onOpenDashboard: (projectId: string) => void; onOpenPortfolioDashboard: () => void }) {
   const [query, setQuery] = useState('');
   const [showArchived, setShowArchived] = useState(true);
   const [gridView, setGridView] = useState(true);
@@ -388,12 +430,15 @@ function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { on
   const [totalIssues, setTotalIssues] = useState(0);
   const [totalTests, setTotalTests] = useState(0);
   const [showNewProject, setShowNewProject] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<NewProjectForm | null>(null);
+  const [personnelCount, setPersonnelCount] = useState(0);
 
   async function fetchProjects() {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch('http://localhost:4000/projects/');
+      const res = await fetch('http://localhost:4000/projects/?pageSize=10000');
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       const json: ApiResponse = await res.json();
       const mapped: Project[] = json.data.map((p) => ({
@@ -412,6 +457,7 @@ function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { on
       setTotalArchived(mapped.filter((p) => p.archived).length);
       setTotalIssues(mapped.reduce((s, p) => s + p.issues, 0));
       setTotalTests(mapped.reduce((s, p) => s + p.tests, 0));
+      setPersonnelCount(json.data.reduce((sum, p) => sum + (p.personnelCount || 0), 0));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load projects');
     } finally {
@@ -428,28 +474,38 @@ function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { on
     return `${project.name} ${project.location}`.toLowerCase().includes(query.toLowerCase());
   }), [activeProjects, query]);
 
+  async function editProject(projectId: string) {
+    try {
+      const response = await fetch(`http://localhost:4000/projects/${projectId}`);
+      const p: ApiProject & { error?: string } = await response.json();
+      if (!response.ok) throw new Error(p.error || 'Unable to load project for editing.');
+      setEditingProjectId(projectId);
+      setEditForm({
+        projectName: p.projectName, customer: p.customer || '', customerReference: p.customerReference || '',
+        city: p.city || '', country: p.country || '', segment: p.segment || '',
+        startDate: p.startDate?.slice(0, 10) || '', endDate: p.endDate?.slice(0, 10) || '',
+        networkNumber: p.networkNumber || '', opportunityNumber: p.opportunityNumber || '',
+        workingDaysPerWeek: String(p.workingDaysPerWeek), workingHoursPerDay: String(p.workingHoursPerDay),
+        siteManager: p.siteManager || emptyPerson(), qualityManager: p.qualityManager || emptyPerson(),
+        commissioningTeam: p.commissioningTeam || [], projectImage: p.projectImage || '',
+      });
+      setShowNewProject(true);
+    } catch (error) { setError(error instanceof Error ? error.message : 'Unable to edit project.'); }
+  }
+
   async function handleCreateProject(form: NewProjectForm) {
-    const res = await fetch('http://localhost:4000/projects/', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    projectName: form.projectName,
-    customer: form.customer.trim() || null,
-    city: form.city || null,
-    country: form.country || null,
-    segment: form.segment,
-    startDate: form.startDate
-      ? new Date(form.startDate).toISOString()
-      : null,
-    endDate: form.endDate
-      ? new Date(form.endDate).toISOString()
-      : null,
-    projectImage: form.projectImage || null
-  }),
-});
-    if (!res.ok) throw new Error(`Failed to create project (${res.status})`);
+    const res = await fetch(`http://localhost:4000/projects/${editingProjectId || ''}`, {
+      method: editingProjectId ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...form, customer: form.customer.trim() || null, customerReference: form.customerReference.trim() || null,
+        siteManager: form.siteManager.email.trim() ? form.siteManager : null,
+        qualityManager: form.qualityManager.email.trim() ? form.qualityManager : null,
+        workingDaysPerWeek: Number(form.workingDaysPerWeek), workingHoursPerDay: Number(form.workingHoursPerDay),
+      }),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || `Failed to save project (${res.status})`);
     await fetchProjects();
   }
 
@@ -464,22 +520,22 @@ function Projects({ onSignOut, onOpenDashboard, onOpenPortfolioDashboard }: { on
           <div className="overview-card"><span className="overview-icon"><Building2 size={17} /></span><div><small>ACTIVE PROJECTS</small><strong>{totalActive}</strong><p><TrendingUp size={11} /> <b>+2</b> this month</p></div></div>
           <div className="overview-card"><span className="overview-icon"><CircleAlert size={17} /></span><div><small>OPEN ISSUES</small><strong>{String(totalIssues).padStart(2, '0')}</strong><p><TrendingUp size={11} /> Across all sites</p></div></div>
           <div className="overview-card"><span className="overview-icon"><Clock3 size={17} /></span><div><small>TESTS PENDING</small><strong>{totalTests}</strong><p>Awaiting results</p></div></div>
-          <div className="overview-card"><span className="overview-icon"><Users size={17} /></span><div><small>PERSONNEL ONSITE</small><strong>245</strong><p>Across all sites</p></div></div>
+          <div className="overview-card"><span className="overview-icon"><Users size={17} /></span><div><small>ACTIVE MEMBERSHIPS</small><strong>{personnelCount}</strong><p>Across all sites (shared users counted per project)</p></div></div>
         </section>
         <section className="toolbar"><label className="project-search"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search projects by name, location, or manager..." />{query && <button onClick={() => setQuery('')} aria-label="Clear search"><X size={13} /></button>}</label><div className="toolbar-actions"><button className="sort-button"><Settings2 size={13} /> Sort: Newest <ChevronDown size={13} /></button><button className={`view-button ${gridView ? 'active' : ''}`} onClick={() => setGridView(true)} aria-label="Grid view"><Grid2X2 size={15} /></button><button className={`view-button ${!gridView ? 'active' : ''}`} onClick={() => setGridView(false)} aria-label="List view"><LayoutList size={15} /></button></div></section>
         {loading && <div className="empty-state">Loading projects…</div>}
         {error && <div className="empty-state">Unable to load projects: {error}</div>}
         {!loading && !error && (
-          <section className="project-section"><div className="section-heading"><div><h2>Active Projects <span>{filteredProjects.length}</span></h2><p>Ongoing construction and development projects currently in progress.</p></div></div><div className={`projects-grid ${gridView ? '' : 'list-view'}`}>{filteredProjects.map((project) => <ProjectCard key={project.id} project={project} onOpenDashboard={onOpenDashboard} />)}</div>{filteredProjects.length === 0 && <div className="empty-state">No projects match your search.</div>}</section>
+          <section className="project-section"><div className="section-heading"><div><h2>Active Projects <span>{filteredProjects.length}</span></h2><p>Ongoing construction and development projects currently in progress.</p></div></div><div className={`projects-grid ${gridView ? '' : 'list-view'}`}>{filteredProjects.map((project) => <ProjectCard key={project.id} project={project} onOpenDashboard={onOpenDashboard} onEdit={editProject} />)}</div>{filteredProjects.length === 0 && <div className="empty-state">No projects match your search.</div>}</section>
         )}
         {!loading && !error && totalArchived > 0 && (
           <>
             <button className="archive-toggle" onClick={() => setShowArchived(!showArchived)}><span />{showArchived ? 'Hide' : 'Show'} Archived Projects <span className="archive-count">{totalArchived}</span><ChevronDown size={13} className={showArchived ? 'rotated' : ''} /><span /></button>
-            {showArchived && <section className="project-section archived-section"><div className="section-heading"><div><h2>Archived Projects <span>{totalArchived}</span></h2><p>Historical projects that have been completed or indefinitely paused.</p></div></div><div className="projects-grid">{archivedProjects.map((project) => <ProjectCard key={project.id} project={project} onOpenDashboard={onOpenDashboard} />)}</div></section>}
+            {showArchived && <section className="project-section archived-section"><div className="section-heading"><div><h2>Archived Projects <span>{totalArchived}</span></h2><p>Historical projects that have been completed or indefinitely paused.</p></div></div><div className="projects-grid">{archivedProjects.map((project) => <ProjectCard key={project.id} project={project} onOpenDashboard={onOpenDashboard} onEdit={editProject} />)}</div></section>}
           </>
         )}
       </main>
-      <NewProjectModal open={showNewProject} onClose={() => setShowNewProject(false)} onSubmit={handleCreateProject} />
+      <NewProjectModal open={showNewProject} initial={editForm} onClose={() => { setShowNewProject(false); setEditingProjectId(null); setEditForm(null); }} onSubmit={handleCreateProject} />
       <footer className="footer"><div className="footer-inner"><div><div className="site-logo"><span className="logo-mark"><span /></span><strong>SiteSphere</strong></div><p>© 2024 SiteSphere Construction Systems. All rights reserved.<br />Professional Grade Construction Management for Enterprise.</p></div><div className="footer-links"><div><b>RESOURCES</b><a>Documentation</a><a>API Reference</a><a>Safety Protocols</a></div><div><b>SUPPORT</b><a>Help Center</a><a>Contact Support</a><a>Training Hub</a></div><div><b>LEGAL</b><a>Privacy Policy</a><a>Terms of Service</a><a>Cookie Settings</a></div></div></div></footer>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, SlidersHorizontal, TestTube as TestTube2, UserRound, Users, Wrench, X } from 'lucide-react';
+import { Bell, CircleCheck as CheckCircle2, ChevronDown, ChevronRight, CircleAlert, ClipboardCheck, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, MoveHorizontal as MoreHorizontal, Paperclip, Plus, Search, Settings2, ShieldCheck, SlidersHorizontal, TestTube as TestTube2, UserRound, Users, Wrench, X } from 'lucide-react';
 import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 
 type Issue = { id: string; title: string; priority: 'Critical' | 'High' | 'Medium' | 'Low'; status: 'Open' | 'In Progress' | 'Under Review' | 'Closed'; assignee: string; initials: string; product: string; phase: string };
@@ -15,9 +15,10 @@ const issues: Issue[] = [
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Submittals', icon: FileText },
+    { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert, active: true },
   // { label: 'Checklist Stats', icon: ClipboardCheck },
-  { label: 'Company Checklists', icon: FolderKanban },
+  { label: 'Checklist', icon: FolderKanban },
   // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },

@@ -92,6 +92,9 @@ h1, h2, h3, p { margin: 0; } h1, h2, h3 { font-family: 'Manrope', sans-serif; co
 .global-search input::placeholder, .project-search input::placeholder { color: #9ca7b5; }
 .top-actions { position: relative; display: flex; align-items: center; gap: 17px; margin-left: auto; }
 .bell-button, .icon-button { position: relative; display: grid; place-items: center; padding: 5px; border: 0; color: #7d8998; background: transparent; }
+.project-edit-button { display: inline-flex; align-items: center; align-self: flex-start; gap: 4px; padding: 5px 8px; border: 1px solid #e5e9ee; border-radius: 4px; color: #096df4; background: white; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.project-edit-button:hover { background: #f3f7ff; }
+.project-edit-button:focus-visible { outline: 2px solid #096df4; outline-offset: 2px; }
 .bell-button i { position: absolute; top: 4px; right: 4px; width: 4px; height: 4px; border-radius: 50%; background: #ff6262; }
 .top-divider { height: 25px; width: 1px; background: #e1e5eb; }
 .profile-button { display: flex; align-items: center; gap: 9px; padding: 0; border: 0; color: #1c2632; background: transparent; text-align: right; }

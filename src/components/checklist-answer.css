@@ -1,0 +1,15 @@
+.company-task-row > .checklist-item-copy { flex: 1; min-width: 0; }
+.company-task-row > .checklist-answer { flex: 0 1 320px; min-width: 0; }
+.checklist-answer { margin: 0; padding: 0; border: 0; font-size: 13px; }
+.checklist-answer label, .checklist-answer legend { display: block; margin-bottom: 6px; font-weight: 600; }
+.checklist-answer input:not([type="radio"]), .checklist-answer textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; font: inherit; }
+.checklist-answer textarea { resize: vertical; }
+.checklist-answer-options { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.checklist-answer-options label { display: flex; align-items: center; gap: 4px; margin: 0; }
+.checklist-answer button { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; font: inherit; }
+.checklist-answer-photo { display: block; max-width: 100%; max-height: 160px; margin: 8px 0; }
+.checklist-answer [role="alert"] { color: #b91c1c; margin-top: 6px; }
+@media (max-width: 700px) {
+  .company-task-row { flex-wrap: wrap; gap: 12px; }
+  .company-task-row > .checklist-item-copy, .company-task-row > .checklist-answer { flex-basis: 100%; }
+}
