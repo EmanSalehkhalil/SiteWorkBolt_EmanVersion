@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, ClipboardCheck, Download, FileText, ChartBar as FileBarChart, Flag, FolderKanban, History, LayoutDashboard, LogOut, Menu, Search, Settings2, ShieldCheck, Users, Wrench } from 'lucide-react';
 import { getMainNavigationTarget, type MainNavigationTarget } from '@/navigation';
 import ChecklistAnswer, { type ChecklistAnswerValue } from '@/components/ChecklistAnswer';
@@ -23,9 +23,7 @@ const navItems = [
   { label: 'Submittals', icon: FileText },
     { label: 'HSE', icon: ShieldCheck },
   { label: 'Issues', icon: CircleAlert },
-  // { label: 'Checklist Stats', icon: ClipboardCheck },
   { label: 'Checklist', icon: FolderKanban, active: true },
-  // { label: 'Testing Workflow', icon: TestTube2 },
   { label: 'Milestones', icon: Flag },
   { label: 'Reports', icon: FileBarChart },
   { label: 'Personas', icon: Users },
@@ -67,6 +65,46 @@ function CompanyChecklists({ projectId, onBackToProject, onNavigate, onSignOut }
   const itemCount = equipment.reduce((total, entry) => total + entry.sections.reduce(
     (sectionTotal, section) => sectionTotal + section.subsections.reduce((subTotal, sub) => subTotal + sub.items.length, 0), 0), 0);
 
+  const allItems = useMemo(() => {
+    const items: { item: ChecklistItem; key: string }[] = [];
+    equipment.forEach((entry) => {
+      entry.sections.forEach((section) => {
+        section.subsections.forEach((subsection) => {
+          subsection.items.forEach((item) => {
+            const key = `${projectId}:${entry.projectEquipmentId}:${selectedPhase}:${item.checklistId}`;
+            items.push({ item, key });
+          });
+        });
+      });
+    });
+    return items;
+  }, [equipment, projectId, selectedPhase]);
+
+  const answered = allItems.filter(({ key }) => answers[key]?.text);
+  const passedCount = answered.filter(({ key }) => {
+    const t = answers[key]?.text;
+    return t === 'Pass' || t === 'Yes';
+  }).length;
+  const failedCount = answered.filter(({ key }) => {
+    const t = answers[key]?.text;
+    return t === 'Fail' || t === 'No';
+  }).length;
+  const pendingCount = itemCount - answered.length;
+  const progressPct = itemCount > 0 ? Math.round((answered.length / itemCount) * 100) : 0;
+
+  const equipmentProgress = (entry: ChecklistEquipment) => {
+    const items = entry.sections.reduce(
+      (total, section) => total + section.subsections.reduce((sub, s) => sub + s.items.length, 0), 0);
+    if (items === 0) return { total: 0, answered: 0, pct: 0 };
+    const answeredCount = entry.sections.reduce((total, section) => total + section.subsections.reduce((sub, s) => {
+      return sub + s.items.filter((item) => {
+        const key = `${projectId}:${entry.projectEquipmentId}:${selectedPhase}:${item.checklistId}`;
+        return answers[key]?.text;
+      }).length;
+    }, 0), 0);
+    return { total: items, answered: answeredCount, pct: Math.round((answeredCount / items) * 100) };
+  };
+
   return <div className="company-checklist-screen">
     <aside className="company-checklist-sidebar">
       <button className="company-checklist-brand" onClick={onBackToProject}><span className="company-checklist-mark"><span /></span><strong>SiteSphere</strong></button>
@@ -81,36 +119,76 @@ function CompanyChecklists({ projectId, onBackToProject, onNavigate, onSignOut }
       <main className="company-checklist-content">
         <div className="company-checklist-title"><div><div className="company-kicker"><button onClick={onBackToProject}><ChevronLeft size={14} /></button> Project Checklist</div><h1>Commissioning Checklist</h1></div><div className="company-title-actions"><button><Settings2 size={13} /> Filters</button><button className="company-report-button"><Download size={13} /> Export L1-L5 Report</button></div></div>
 
-        <section className="company-summary-grid"><div><span className="summary-icon blue"><ClipboardCheck size={15} /></span><small>{selectedPhase} CHECKLIST ITEMS</small><strong>{itemCount}</strong></div></section>
+        <section className="company-summary-grid">
+          <div>
+            <span className="summary-icon blue"><ClipboardCheck size={15} /></span>
+            <small>OVERALL PROGRESS</small>
+            <strong>{progressPct}%<em>{answered.length}/{itemCount}</em></strong>
+            <i><b style={{ width: `${progressPct}%` }} /></i>
+          </div>
+          <div>
+            <span className="summary-icon green"><ClipboardCheck size={15} /></span>
+            <small>PASSED INSPECTIONS</small>
+            <strong>{passedCount}</strong>
+          </div>
+          <div>
+            <span className="summary-icon red"><CircleAlert size={15} /></span>
+            <small>FAILED / ISSUES</small>
+            <strong>{failedCount}</strong>
+          </div>
+          <div>
+            <span className="summary-icon orange"><ClipboardCheck size={15} /></span>
+            <small>PENDING REVIEW</small>
+            <strong>{pendingCount}</strong>
+          </div>
+        </section>
 
-        <nav className="company-phase-tabs">{phases.map((phase) => <button className={selectedPhase === phase.level ? 'active' : ''} aria-pressed={selectedPhase === phase.level} key={phase.level} onClick={() => setSelectedPhase(phase.level)}><span>{phase.level}</span><strong>{phase.title}</strong></button>)}</nav>
-        <p role="note">Answers are unsaved drafts only. They are not submitted and will be lost when you leave this screen or refresh.</p>
+        <nav className="company-phase-tabs">{phases.map((phase) => <button className={selectedPhase === phase.level ? 'active' : ''} aria-pressed={selectedPhase === phase.level} key={phase.level} onClick={() => setSelectedPhase(phase.level)}><span>{phase.level}<em>Phase</em></span><strong>{phase.title}</strong></button>)}</nav>
 
-        <div className="company-equipment-heading"><div><h2>Equipment List for {selectedPhase} <span>{equipment.length}</span></h2></div><button onClick={() => setExpanded(!expanded)}>{expanded ? 'Collapse products' : 'Expand products'} <ChevronDown size={13} /></button></div>
-        {loading && <p role="status">Loading {selectedPhase} checklists...</p>}
-        {loadError && <p role="alert">{loadError}</p>}
-        {!loading && !loadError && equipment.length === 0 && <p>No checklist items are configured for this project's equipment in {selectedPhase}.</p>}
-        {expanded && !loading && !loadError && equipment.map((entry) => <section className="equipment-card" key={entry.projectEquipmentId}>
-          <div className="equipment-header"><div><h3>{entry.equipmentName || `Equipment ${entry.equipmentId}`}</h3></div></div>
-          {entry.sections.map((section) => <div className="checklist-group" key={section.sectionId}>
-            <div className="checklist-group-heading"><ClipboardCheck size={14} /><div><strong>{section.sectionNumber}. {section.sectionName}</strong></div></div>
-            {section.subsections.map((subsection) => <div key={subsection.subsectionId}>
-              <h4>{section.sectionNumber}.{subsection.subsectionNumber} {subsection.subsectionName}</h4>
-              {subsection.items.map((item) => {
-                const answerKey = `${projectId}:${entry.projectEquipmentId}:${selectedPhase}:${item.checklistId}`;
-                return <div key={item.checklistId}>
-                  <div className="company-task-row">
-                  <div className="checklist-item-copy"><strong>{item.checklistText}</strong><small>Response type: {item.checklistAnswerType}</small></div>
-                  <ChecklistAnswer answerType={item.checklistAnswerType}
-                    value={answers[answerKey] || { text: '', photo: null }}
-                    onChange={(value) => setAnswers((current) => ({ ...current, [answerKey]: value }))} />
-                  </div>
-                  {projectId && <ChecklistActivity projectId={projectId} projectEquipmentId={entry.projectEquipmentId} checklistId={item.checklistId} />}
-                </div>;
-              })}
-            </div>)}
-          </div>)}
-        </section>)}
+        <div className="company-equipment-heading"><div><h2>Equipment List for {selectedPhase} <span>{equipment.length}</span></h2></div><button onClick={() => setExpanded(!expanded)}>{expanded ? 'Collapse all' : 'Expand all'} <ChevronDown size={13} /></button></div>
+
+        {loading && <div className="company-loading-state"><div className="company-spinner" /><p>Loading {selectedPhase} checklists...</p></div>}
+        {loadError && <div className="company-error-state"><CircleAlert size={18} /><p>{loadError}</p></div>}
+        {!loading && !loadError && equipment.length === 0 && <div className="company-empty-state"><ClipboardCheck size={20} /><p>No checklist items are configured for this project's equipment in {selectedPhase}.</p></div>}
+
+        {expanded && !loading && !loadError && equipment.map((entry) => {
+          const prog = equipmentProgress(entry);
+          return <section className="equipment-card" key={entry.projectEquipmentId}>
+            <div className="equipment-header">
+              <div>
+                <h3>{entry.equipmentName || `Equipment ${entry.equipmentId}`}</h3>
+                <p>{entry.sections.length} section{entry.sections.length !== 1 ? 's' : ''} - {prog.total} checklist item{prog.total !== 1 ? 's' : ''}</p>
+              </div>
+              <div className="equipment-progress">
+                <small>COMPLETION <b>{prog.answered}/{prog.total}</b></small>
+                <span><i><b style={{ width: `${prog.pct}%` }} /></i> <strong>{prog.pct}%</strong></span>
+              </div>
+            </div>
+            {entry.sections.map((section) => {
+              const sectionItems = section.subsections.reduce((total, sub) => total + sub.items.length, 0);
+              return <div className="checklist-group" key={section.sectionId}>
+                <div className="checklist-group-heading"><ClipboardCheck size={14} /><div><strong>{section.sectionNumber}. {section.sectionName}</strong><small>{sectionItems} item{sectionItems !== 1 ? 's' : ''}</small></div></div>
+                {section.subsections.map((subsection) => <div className="checklist-subsection" key={subsection.subsectionId}>
+                  <h4>{section.sectionNumber}.{subsection.subsectionNumber} {subsection.subsectionName}</h4>
+                  {subsection.items.map((item) => {
+                    const answerKey = `${projectId}:${entry.projectEquipmentId}:${selectedPhase}:${item.checklistId}`;
+                    return <div key={item.checklistId}>
+                      <div className="company-task-row">
+                        <div className="checklist-item-copy"><strong>{item.checklistText}</strong><small>Response type: {item.checklistAnswerType}</small></div>
+                        <ChecklistAnswer answerType={item.checklistAnswerType}
+                          value={answers[answerKey] || { text: '', photo: null }}
+                          onChange={(value) => setAnswers((current) => ({ ...current, [answerKey]: value }))} />
+                      </div>
+                      {projectId && <ChecklistActivity projectId={projectId} projectEquipmentId={entry.projectEquipmentId} checklistId={item.checklistId} />}
+                    </div>;
+                  })}
+                </div>)}
+              </div>;
+            })}
+          </section>;
+        })}
+
+        <p className="company-disclaimer"><ClipboardCheck size={12} /> Answers are unsaved drafts only. They are not submitted and will be lost when you leave this screen or refresh.</p>
       </main>
       <footer className="company-checklist-footer"><span>© 2024 SiteSphere Construction Systems. All rights reserved.</span><div><a>Documentation</a><a>Support</a><a>Privacy Policy</a></div></footer>
     </div>

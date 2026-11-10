@@ -1,15 +1,39 @@
-.checklist-activity { border-bottom: 1px solid #e2e8f0; padding: 8px 20px 16px; font-size: 13px; }
-.checklist-activity button { padding: 6px 10px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; }
-.checklist-activity-panel { padding-top: 12px; max-width: 850px; }
-.checklist-activity-panel label { display: grid; gap: 6px; margin: 10px 0; }
-.checklist-activity-panel textarea, .checklist-activity-panel select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font: inherit; max-width: 100%; }
-.checklist-activity-panel textarea { min-height: 70px; resize: vertical; }
-.checklist-activity-panel h5 { margin: 18px 0 8px; font-size: 14px; }
-.checklist-comment { padding: 10px; border-left: 2px solid #cbd5e1; margin: 8px 0; }
-.checklist-comment.reply { margin-left: 20px; }
-.checklist-comment small { display: block; }
-.checklist-comment p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0; }
-.checklist-activity-panel time { color: #64748b; font-size: 11px; }
-.checklist-activity-panel [role="alert"] { color: #b91c1c; }
-.checklist-activity-panel [role="status"] { color: #166534; }
-.checklist-activity-panel li { margin-bottom: 8px; overflow-wrap: anywhere; }
+.checklist-activity { border-top: 1px solid #f0f3f6; padding: 6px 20px 12px; background: #fbfcfd; }
+.checklist-activity > button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border: 1px solid #e2e7ed; border-radius: 5px; color: #5d6877; background: #fff; font-size: 10px; font-weight: 600; cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+.checklist-activity > button:hover { border-color: #c9d6e8; background: #f5f7fa; color: #3c4757; }
+.checklist-activity > button[aria-expanded="true"] { border-color: #0a6df4; color: #0a6df4; background: #eef5ff; }
+.checklist-activity-panel { padding-top: 12px; max-width: 760px; }
+.checklist-activity-panel > p { margin: 8px 0; padding: 8px 12px; border-radius: 5px; font-size: 10px; font-weight: 600; }
+.checklist-activity-panel > [role="alert"] { color: #c04848; background: #fff5f5; border: 1px solid #f3c9c9; display: flex; align-items: center; gap: 8px; }
+.checklist-activity-panel > [role="status"] { color: #128c68; background: #edf9f5; border: 1px solid #b8e6d0; }
+.checklist-activity-panel > [role="alert"] button { margin-left: auto; padding: 3px 8px; border: 1px solid #f3c9c9; border-radius: 4px; color: #c04848; background: #fff; font-size: 9px; font-weight: 700; cursor: pointer; }
+.checklist-activity-panel label { display: grid; gap: 5px; margin: 10px 0; color: #5d6877; font-size: 9px; font-weight: 700; letter-spacing: .04em; }
+.checklist-activity-panel select, .checklist-activity-panel textarea {
+  padding: 8px 10px; border: 1px solid #d9dfe7; border-radius: 6px; color: #1c2632; background: #fbfcfe; font: inherit; font-size: 11px; max-width: 100%; transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.checklist-activity-panel select:focus, .checklist-activity-panel textarea:focus { outline: 0; border-color: #0a6df4; box-shadow: 0 0 0 3px rgba(10, 109, 244, .12); background: #fff; }
+.checklist-activity-panel textarea { min-height: 64px; resize: vertical; line-height: 1.5; }
+.checklist-activity-panel h5 { margin: 16px 0 8px; padding-bottom: 6px; border-bottom: 1px solid #eef1f5; color: #3c4757; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+.checklist-activity-panel > p:only-child { margin: 4px 0; padding: 0; border: 0; }
+.checklist-comment { padding: 10px 12px; margin: 6px 0; border-left: 2px solid #c9d6e8; background: #fff; border-radius: 0 5px 5px 0; transition: border-color .15s; }
+.checklist-comment:hover { border-left-color: #0a6df4; }
+.checklist-comment.reply { margin-left: 20px; border-left-color: #b8e6d0; background: #f7fdfb; }
+.checklist-comment small { display: block; margin-bottom: 3px; color: #8a95a4; font-size: 9px; font-weight: 600; }
+.checklist-comment strong { color: #1c2632; font-size: 11px; font-weight: 700; }
+.checklist-comment time { margin-left: 6px; color: #a0a9b4; font-size: 9px; font-weight: 500; }
+.checklist-comment p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 5px 0 7px; color: #4a5666; font-size: 11px; line-height: 1.5; }
+.checklist-comment > button { padding: 3px 8px; border: 1px solid #e2e7ed; border-radius: 4px; color: #6b7787; background: #fff; font-size: 9px; font-weight: 600; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
+.checklist-comment > button:hover { border-color: #0a6df4; color: #0a6df4; background: #eef5ff; }
+.checklist-activity-panel form { margin: 10px 0; }
+.checklist-activity-panel form > p { padding: 7px 10px; margin-bottom: 8px; border: 1px solid #dce9ff; border-radius: 5px; color: #0a6df4; background: #eef5ff; font-size: 10px; font-weight: 600; }
+.checklist-activity-panel form > p button { margin-left: 8px; padding: 2px 7px; border: 1px solid #dce9ff; border-radius: 4px; color: #0a6df4; background: #fff; font-size: 9px; font-weight: 700; cursor: pointer; }
+.checklist-activity-panel form > button[type="submit"] { height: 30px; padding: 0 16px; border: 0; border-radius: 6px; color: #fff; background: #0a6df4; font-size: 10px; font-weight: 700; cursor: pointer; transition: background .15s, box-shadow .15s; display: inline-flex; align-items: center; gap: 5px; }
+.checklist-activity-panel form > button[type="submit"]:hover { background: #096df5; box-shadow: 0 3px 10px rgba(10, 109, 244, .25); }
+.checklist-activity-panel form > button[type="submit"]:disabled { background: #c9d6e8; cursor: not-allowed; box-shadow: none; }
+.checklist-activity-panel ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.checklist-activity-panel li { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #eef1f5; border-radius: 6px; background: #fff; font-size: 10px; overflow-wrap: anywhere; transition: border-color .15s; }
+.checklist-activity-panel li:hover { border-color: #dce9ff; }
+.checklist-activity-panel li a { color: #0a6df4; font-size: 11px; font-weight: 700; text-decoration: none; }
+.checklist-activity-panel li a:hover { text-decoration: underline; }
+.checklist-activity-panel li time { margin-left: auto; color: #a0a9b4; font-size: 9px; font-weight: 500; white-space: nowrap; }
+.checklist-activity-panel input[type="file"] { padding: 6px 8px; border: 1px solid #d9dfe7; border-radius: 6px; color: #4a5666; background: #fbfcfe; font-size: 10px; cursor: pointer; max-width: 100%; }

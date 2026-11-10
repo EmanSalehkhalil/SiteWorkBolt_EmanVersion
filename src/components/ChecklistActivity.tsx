@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MessageSquare, Paperclip, Upload, RotateCw } from 'lucide-react';
 import './checklist-activity.css';
 
 type Comment = { commentId: string; parentCommentId: string | null; body: string; authorName: string; createdAt: string };
@@ -68,7 +69,7 @@ function ActivityPanel({ baseUrl }: { baseUrl: string }) {
     {error && <p role="alert">{error} <button type="button" disabled={busy} onClick={() => {
       setError('');
       refresh().catch((cause: unknown) => setError(cause instanceof Error ? cause.message : 'Unable to refresh activity.'));
-    }}>Reload</button></p>}
+    }}><RotateCw size={10} /> Reload</button></p>}
     {notice && <p role="status">{notice}</p>}
     {!activity && !error && <p role="status">Loading comments and documents...</p>}
     {activity && <>
@@ -79,25 +80,25 @@ function ActivityPanel({ baseUrl }: { baseUrl: string }) {
         </select>
       </label>
       {activity.members.length === 0 && <p>No active project members are available to post.</p>}
-      <h5>Comments</h5>
+      <h5><MessageSquare size={12} /> Comments</h5>
       {activity.comments.length === 0 && <p>No comments yet.</p>}
       {activity.comments.map((comment) => <article key={comment.commentId} className={comment.parentCommentId ? 'checklist-comment reply' : 'checklist-comment'}>
-        {comment.parentCommentId && <small>Reply to {activity.comments.find((parent) => parent.commentId === comment.parentCommentId)?.authorName || 'comment'} (#{comment.parentCommentId})</small>}
+        {comment.parentCommentId && <small>Reply to {activity.comments.find((parent) => parent.commentId === comment.parentCommentId)?.authorName || 'comment'}</small>}
         <strong>{comment.authorName}</strong> <time dateTime={comment.createdAt}>{new Date(comment.createdAt).toLocaleString()}</time>
         <p>{comment.body}</p>
         <button type="button" disabled={busy} onClick={() => setReply(comment)}>Reply</button>
       </article>)}
       <form onSubmit={(event) => { event.preventDefault(); void submit('comment'); }}>
-        {reply && <p>Replying to {reply.authorName}: {reply.body} <button type="button" disabled={busy} onClick={() => setReply(null)}>Cancel reply</button></p>}
+        {reply && <p>Replying to {reply.authorName}: {reply.body} <button type="button" disabled={busy} onClick={() => setReply(null)}>Cancel</button></p>}
         <label>{reply ? 'Your reply' : 'New comment'}<textarea value={body} maxLength={5000} required disabled={busy} onChange={(event) => setBody(event.target.value)} /></label>
         <button type="submit" disabled={busy || !authorId || !body.trim()}>{busy ? 'Saving...' : reply ? 'Post reply' : 'Post comment'}</button>
       </form>
-      <h5>Documents</h5>
+      <h5><Paperclip size={12} /> Documents</h5>
       {activity.documents.length === 0 && <p>No documents attached.</p>}
       <ul>{activity.documents.map((document) => <li key={document.documentId}>
         <a href={`${baseUrl}/documents/${document.documentId}`}>{document.originalName}</a>
-        {' '}({Math.ceil(document.byteSize / 1024)} KB) - {document.authorName}
-        {' '}<time dateTime={document.createdAt}>{new Date(document.createdAt).toLocaleString()}</time>
+        <span>({Math.ceil(document.byteSize / 1024)} KB) - {document.authorName}</span>
+        <time dateTime={document.createdAt}>{new Date(document.createdAt).toLocaleString()}</time>
       </li>)}</ul>
       <form onSubmit={(event) => { event.preventDefault(); void submit('document'); }}>
         <label>Attach document (maximum 10 MB)<input type="file" disabled={busy} onChange={(event) => {
@@ -105,7 +106,7 @@ function ActivityPanel({ baseUrl }: { baseUrl: string }) {
           event.target.value = '';
         }} /></label>
         {file && <p>Selected: {file.name}</p>}
-        <button type="submit" disabled={busy || !authorId || !file}>Upload document</button>
+        <button type="submit" disabled={busy || !authorId || !file}><Upload size={11} /> Upload document</button>
       </form>
     </>}
   </div>;
@@ -117,7 +118,7 @@ export default function ChecklistActivity({ projectId, projectEquipmentId, check
   const [open, setOpen] = useState(false);
   const baseUrl = `http://localhost:4000/projects/${encodeURIComponent(projectId)}/equipment/${encodeURIComponent(projectEquipmentId)}/checklists/${encodeURIComponent(checklistId)}`;
   return <div className="checklist-activity">
-    <button type="button" aria-expanded={open} onClick={() => setOpen(!open)}>Comments &amp; documents</button>
+    <button type="button" aria-expanded={open} onClick={() => setOpen(!open)}><MessageSquare size={11} /> Comments &amp; documents</button>
     {open && <ActivityPanel key={baseUrl} baseUrl={baseUrl} />}
   </div>;
 }

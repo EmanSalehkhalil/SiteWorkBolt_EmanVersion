@@ -518,6 +518,17 @@ h1 { font-size: 26px; line-height: 1; letter-spacing: -.055em; } .header-count, 
 .company-checklist-footer div { display: flex; gap: 19px; }
 .company-checklist-footer a { color: #8792a0; }
 @media (max-width: 1000px) { .company-summary-grid { grid-template-columns: repeat(2, 1fr); } }
+.checklist-subsection { padding: 0; }
+.checklist-subsection h4 { margin: 0; padding: 10px 20px 6px; color: #5d6877; font-size: 10px; font-weight: 700; letter-spacing: .02em; border-top: 1px solid #f0f3f6; background: #fbfcfd; }
+.checklist-subsection:first-of-type h4 { border-top: 0; }
+.company-loading-state, .company-error-state, .company-empty-state { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 20px; border: 1px solid #e2e7ed; border-radius: 7px; background: #fff; color: #8a95a4; font-size: 12px; text-align: center; }
+.company-error-state { color: #c04848; border-color: #f3c9c9; background: #fff5f5; }
+.company-error-state svg { color: #e26767; }
+.company-empty-state svg { color: #b4bcc7; }
+.company-spinner { width: 28px; height: 28px; border: 3px solid #e2e7ed; border-top-color: #0a6df4; border-radius: 50%; animation: company-spin .7s linear infinite; }
+@keyframes company-spin { to { transform: rotate(360deg); } }
+.company-disclaimer { display: flex; align-items: center; gap: 7px; margin-top: 22px; padding: 11px 15px; border: 1px solid #e8eef5; border-radius: 6px; color: #7a8695; background: #f7faff; font-size: 10px; font-weight: 500; }
+.company-disclaimer svg { color: #8a95a4; flex-shrink: 0; }
 @media (max-width: 720px) { .company-checklist-screen { grid-template-columns: 1fr; }.company-checklist-sidebar { display: none; }.company-mobile-menu { display: grid; }.company-checklist-topbar { padding: 0 16px; gap: 11px; }.company-search { width: 160px; }.company-user > span:nth-child(4), .company-divider { display: none; }.company-checklist-content { padding: 24px 16px 38px; }.company-checklist-title { flex-direction: column; }.company-title-actions button { flex: 1; justify-content: center; }.company-summary-grid { grid-template-columns: 1fr; }.equipment-header { flex-direction: column; }.equipment-progress { text-align: left; }.company-task-row { flex-direction: column; gap: 12px; }.company-checklist-footer { flex-direction: column; gap: 10px; align-items: flex-start; padding: 16px; } }
 
 /* ============================================================

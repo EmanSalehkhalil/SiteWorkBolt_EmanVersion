@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react';
+import { Check, X, Minus } from 'lucide-react';
 import './checklist-answer.css';
 
 export type ChecklistAnswerValue = { text: string; photo: File | null };
@@ -29,14 +30,19 @@ export default function ChecklistAnswer({ answerType, value, onChange }: Props) 
     : answerType === 'Yes/No/NA' ? ['Yes', 'No', 'NA'] : null;
 
   if (options) {
+    const iconFor = (opt: string) => opt === 'Pass' || opt === 'Yes' ? <Check size={10} /> : opt === 'Fail' || opt === 'No' ? <X size={10} /> : <Minus size={10} />;
+    const clsFor = (opt: string) => {
+      if (value.text !== opt) return '';
+      if (opt === 'Pass' || opt === 'Yes') return 'selected-pass';
+      if (opt === 'Fail' || opt === 'No') return 'selected-fail';
+      return 'selected-na';
+    };
     return <fieldset className="checklist-answer">
-      <legend>Answer ({answerType})</legend>
       <div className="checklist-answer-options">
-        {options.map((option) => <label key={option}>
-          <input type="radio" name={inputId} value={option} checked={value.text === option} onChange={() => setText(option)} />
-          {option === 'NA' ? 'N/A' : option}
-        </label>)}
-        <button type="button" disabled={!value.text} onClick={() => setText('')}>Clear</button>
+        {options.map((option) => <button type="button" key={option} className={clsFor(option)} onClick={() => setText(option)}>
+          {iconFor(option)}{option === 'NA' ? 'N/A' : option}
+        </button>)}
+        {value.text && <button type="button" className="clear-btn" onClick={() => setText('')}>Clear</button>}
       </div>
     </fieldset>;
   }
@@ -58,10 +64,10 @@ export default function ChecklistAnswer({ answerType, value, onChange }: Props) 
           event.target.value = '';
         }} />
       {photoError && <p id={`${inputId}-error`} role="alert">{photoError}</p>}
-      {value.photo && <div>
-        <span>{value.photo.name}</span>
+      {value.photo && <div className="checklist-answer-photo-wrap">
         {photoUrl && <img className="checklist-answer-photo" src={photoUrl} alt="Selected checklist answer" />}
-        <button type="button" onClick={() => { setPhotoError(''); onChange({ text: '', photo: null }); }}>Remove photo</button>
+        <span>{value.photo.name}</span>
+        <button type="button" onClick={() => { setPhotoError(''); onChange({ text: '', photo: null }); }}>Remove</button>
       </div>}
     </div>;
   }
